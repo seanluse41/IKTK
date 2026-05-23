@@ -25,12 +25,12 @@
     ]
   },
   "name": {
-    "en": "More Modern Kintone Plugin Template",
-    "ja": "More Modern Kintone Plugin Template"
+    "en": "Kintone Pollster",
+    "ja": "意思決定くん"
   },
   "description": {
-    "en": "A Kintone Plugin Template that uses Vite, Svelte 5.0, Kintone UI Components, and has i18n ready",
-    "ja": "A Kintone Plugin Template that uses Vite, Svelte 5.0, Kintone UI Components, and has i18n ready"
+    "en": "意思決定くん for Kintone. Create quick polls in comment",
+    "ja": "意思決定くん for Kintone. Create quick polls in comment"
   },
   "homepage_url": {
     "en": "https://kintone.dev",
