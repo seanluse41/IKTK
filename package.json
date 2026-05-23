@@ -11,15 +11,15 @@
     "pack": "kintone-plugin-packer --ppk private.ppk --out dist/plugin.zip plugin"
   },
   "dependencies": {
-    "@kintone/rest-api-client": "^6.0.0",
-    "i18next": "^25.7.4",
-    "kintone-ui-component": "^1.23.1"
+    "@kintone/rest-api-client": "^6.2.0",
+    "i18next": "^26.2.0",
+    "kintone-ui-component": "^1.25.0"
   },
   "devDependencies": {
-    "@kintone/plugin-packer": "^8.0.0",
-    "@kintone/plugin-uploader": "^10.0.0",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "svelte": "^5.46.4",
-    "vite": "^7.3.1"
+    "@kintone/plugin-packer": "^9.1.1",
+    "@kintone/plugin-uploader": "^10.0.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "svelte": "^5.55.9",
+    "vite": "^8.0.14"
   }
 }
