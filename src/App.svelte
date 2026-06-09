@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte';
   import { setupI18n } from './i18n.js';
-  import Header from './components/Header.svelte';
 
   let { pluginId } = $props();
   
