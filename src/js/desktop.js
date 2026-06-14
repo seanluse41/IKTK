@@ -1,9 +1,20 @@
 import { mount } from 'svelte';
 import Form from '../components/form.svelte';
+import { getRepositoryRecord } from '../services/getRepositoryRecord.js';
+import { createRepositoryRecord } from '../services/createRepositoryRecord.js';
+import { addQuestionnaireRow } from '../services/updateRepositoryRecord.js';
+import { postComment } from '../services/commentPoster.js';
+import { buildQuestionnaireRow } from '../services/buildQuestionnaireRow.js';
 
 const PLUGIN_ID = kintone.$PLUGIN_ID;
 
-kintone.events.on('app.record.detail.show', () => {
+kintone.events.on('app.record.detail.show', async () => {
+  const appId = String(kintone.app.getId());
+  const recordId = String(kintone.app.record.getId());
+
+  const repositoryRecord = await getRepositoryRecord(appId, recordId);
+  console.log('repository record:', repositoryRecord);
+
   const observer = new MutationObserver(() => {
     const mentionBtn = document.getElementById('+oceanMention');
     if (!mentionBtn || document.getElementById('questionnaire-create-btn')) return;
@@ -14,9 +25,6 @@ kintone.events.on('app.record.detail.show', () => {
     btn.querySelector('.ocean-ui-editor-toolbar-mention-button').textContent = 'アンケート';
 
     btn.addEventListener('click', async () => {
-      const appId = String(kintone.app.getId());
-      const recordId = String(kintone.app.record.getId());
-
       const body = document.createElement('div');
       const form = mount(Form, { target: body, props: { appId, recordId } });
 
@@ -27,11 +35,27 @@ kintone.events.on('app.record.detail.show', () => {
         showCancelButton: true,
         cancelButtonText: 'キャンセル',
         showCloseButton: true,
-        beforeClose: (action) => {
+        beforeClose: async (action) => {
           if (action === 'OK') {
-            const data = form.getFormData();
-            console.log('form data:', data);
-            // TODO: submit to repository app
+            const formData = form.getFormData();
+            const loginUser = kintone.getLoginUser();
+
+            const commentID = await postComment({
+              app: appId,
+              record: recordId,
+              comment: {
+                text: `アンケートが開始されました: ${formData.title}`,
+                mentions: formData.mentions,
+              },
+            });
+
+            const row = buildQuestionnaireRow(formData, loginUser, commentID);
+
+            if (repositoryRecord) {
+              await addQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, row);
+            } else {
+              await createRepositoryRecord(appId, recordId, row);
+            }
           }
         },
       });

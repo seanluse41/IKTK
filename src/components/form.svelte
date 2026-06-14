@@ -6,12 +6,15 @@
 
   let { appId, recordId } = $props();
 
+  const MAX_OPTIONS = 5;
+
   let title = $state('');
   let options = $state(['', '']);
   let deadline = $state('');
-  let participants = $state('');
+  let mentions = $state([]);
 
   function addOption() {
+    if (options.length >= MAX_OPTIONS) return;
     options = [...options, ''];
   }
 
@@ -20,9 +23,12 @@
   }
 
   export function getFormData() {
-    // Parse @mentions out of the participants textarea
-    const mentions = [...participants.matchAll(/@(\S+)/g)].map(m => m[1]);
-    return { title, options, deadline, mentions };
+    return {
+      title,
+      options,
+      deadline,
+      mentions: mentions.map(({ code, type }) => ({ code, type })),
+    };
   }
 </script>
 
@@ -47,7 +53,9 @@
         />
       </div>
     {/each}
-    <button onclick={addOption} style="cursor:pointer;">＋ 選択肢を追加</button>
+    {#if options.length < MAX_OPTIONS}
+      <button onclick={addOption} style="cursor:pointer;">＋ 選択肢を追加</button>
+    {/if}
   </div>
 
   <DateTimePicker
@@ -56,6 +64,6 @@
     onchange={(e) => deadline = e.detail.value}
   />
 
-  <MentionTextarea {appId} {recordId} bind:value={participants} />
+  <MentionTextarea {appId} {recordId} bind:mentions />
 
 </div>
