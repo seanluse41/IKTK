@@ -1,3 +1,4 @@
+// src/services/questionnaireCommentInsertor.js
 import { mount } from 'svelte';
 import Questionnaire from '../components/questionnaire.svelte';
 
@@ -15,7 +16,7 @@ import Questionnaire from '../components/questionnaire.svelte';
 // inserted wrapper in the wrong position or detached entirely. So on every
 // call we re-check that the wrapper still immediately follows its anchor
 // comment, and move/recreate it if not.
-export function insertQuestionnaires(rows) {
+export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
   const lists = document.querySelectorAll('.itemlist-gaia');
   if (lists.length === 0) return;
 
@@ -48,9 +49,17 @@ export function insertQuestionnaires(rows) {
     wrapper.className = 'itemlist-item-gaia itemlist-item-head-gaia';
     anchorLi.insertAdjacentElement('afterend', wrapper);
 
+    const flags = flagsByCommentID[commentID] ?? { isCreator: false, hasVoted: false };
+
     mount(Questionnaire, {
       target: wrapper,
-      props: { row: row.value },
+      props: {
+        row: row.value,
+        isCreator: flags.isCreator,
+        hasVoted: flags.hasVoted,
+        repositoryRecord: voteContext.repositoryRecord,
+        loginUser: voteContext.loginUser,
+      },
     });
   });
 }
