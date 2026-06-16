@@ -18,27 +18,23 @@
   });
 </script>
 
-<li class="itemlist-item-gaia questionnaire-item">
-  <div class="questionnaire-box">
-    <div class="questionnaire-title">{title}</div>
-    {#each options as option}
-      <div class="questionnaire-option">
-        {option.label} — {votes[option.letter] || 0}票
-      </div>
-    {/each}
-  </div>
-</li>
+<div class="itemlist-head-gaia">
+  <div class="itemlist-user-gaia questionnaire-label">📊 アンケート</div>
+</div>
+<div class="commentlist-body-gaia questionnaire-body">
+  <div class="questionnaire-title">{title}</div>
+  {#each options as option}
+    <div class="questionnaire-option">
+      {option.label} — {votes[option.letter] || 0}票
+    </div>
+  {/each}
+</div>
 
 <style>
-  .questionnaire-item {
-    list-style: none;
-    padding: 8px 16px;
+  .questionnaire-label {
+    font-weight: 600;
   }
-  .questionnaire-box {
-    border: 1px solid #e3e7e8;
-    border-radius: 6px;
-    padding: 10px 14px;
-    background: #fafbfb;
+  .questionnaire-body {
     font-size: 13px;
   }
   .questionnaire-title {
