@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import Text from "../builders/desktop/text.svelte";
   import DateTimePicker from "../builders/desktop/datetimepicker.svelte";
   import MentionTextarea from "./mentionTextArea.svelte";

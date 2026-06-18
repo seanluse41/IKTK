@@ -4,16 +4,18 @@
 export function buildQuestionnaireRow(formData, loginUser, commentID) {
   const { title, options, deadline, mentions } = formData;
 
+  const filledOptions = options.filter((label) => label.trim());
+
   const optionLetters = 'abcdefghijklmnopqrstuvwxyz';
 
   // "A:Option 1;;;B:Option 2;;;" - triple-semicolon delimited so labels
   // can safely contain commas or single/double semicolons.
-  const optionsValue = options
-    .map((label, i) => `${optionLetters[i].toUpperCase()}:${label}`)
+  const optionsValue = filledOptions
+    .map((label, i) => `${optionLetters[i].toUpperCase()}:${label.trim()}`)
     .join(';;;') + ';;;';
 
   // "a:0,b:0,c:0" - positional vote counters, lowercase letters.
-  const votesValue = options
+  const votesValue = filledOptions
     .map((_, i) => `${optionLetters[i]}:0`)
     .join(',');
 
@@ -29,15 +31,13 @@ export function buildQuestionnaireRow(formData, loginUser, commentID) {
     .filter(m => m.type === 'ORGANIZATION')
     .map(({ code }) => ({ code }));
 
-  const endTimeUtc = new Date(deadline).toISOString();
-
   const now = new Date().toISOString();
 
   return {
     commentID: { value: String(commentID) },
     title: { value: title },
     startTime: { value: now },
-    endTime: { value: endTimeUtc },
+    endTime: { value: new Date(deadline).toISOString() },
     options: { value: optionsValue },
     votes: { value: votesValue },
     users: { value: users },
