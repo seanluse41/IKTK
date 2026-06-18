@@ -59,6 +59,7 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
         hasVoted: flags.hasVoted,
         repositoryRecord: voteContext.repositoryRecord,
         loginUser: voteContext.loginUser,
+        repoAppId: voteContext.repoAppId,
       },
     });
   });

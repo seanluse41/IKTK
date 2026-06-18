@@ -9,11 +9,21 @@ kintone.events.on('app.record.detail.show', async () => {
   const appId = String(kintone.app.getId());
   const recordId = String(kintone.app.record.getId());
 
-  const repositoryRecord = await getRepositoryRecord(appId, recordId);
+  const config = kintone.plugin.app.getConfig(PLUGIN_ID);
+  const allowNonAdminPoll = config.allowNonAdminPoll === 'true';
+  const repoAppId = config.repoAppId;
+
+  const repositoryRecord = await getRepositoryRecord(appId, recordId, repoAppId);
   console.log('repository record:', repositoryRecord);
 
   const loginUser = kintone.getLoginUser();
   const userLanguage = loginUser.language;
+
+  let canCreatePoll = true;
+  if (!allowNonAdminPoll) {
+    const permissions = await kintone.app.getPermissions();
+    canCreatePoll = permissions.editApp;
+  }
 
   const sideBarState = await kintone.app.record.getSideBarDisplayState();
   if (sideBarState !== 'COMMENTS') {
@@ -22,20 +32,23 @@ kintone.events.on('app.record.detail.show', async () => {
 
   if (repositoryRecord) {
     const flagsByCommentID = buildFlagsByCommentID(repositoryRecord.table.value, loginUser);
-    insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser });
+    insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser, repoAppId });
   }
 
   const observer = new MutationObserver(() => {
-    createQuestionnaireButton({
-      pluginId: PLUGIN_ID,
-      appId,
-      recordId,
-      getRepositoryRecord: () => repositoryRecord,
-    });
+    if (canCreatePoll) {
+      createQuestionnaireButton({
+        pluginId: PLUGIN_ID,
+        appId,
+        recordId,
+        repoAppId,
+        getRepositoryRecord: () => repositoryRecord,
+      });
+    }
 
     if (repositoryRecord) {
       const flagsByCommentID = buildFlagsByCommentID(repositoryRecord.table.value, loginUser);
-      insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser });
+      insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser, repoAppId });
     }
   });
 

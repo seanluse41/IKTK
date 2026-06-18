@@ -21,15 +21,15 @@
       "css/config.css"
     ],
     "required_params": [
-      "message"
+      "repoAppId"
     ]
   },
   "name": {
-    "en": "Kintone Pollster",
+    "en": "Kintone PollBuddy",
     "ja": "意思決定くん"
   },
   "description": {
-    "en": "Pollster for Kintone. Create quick polls in comment",
+    "en": "PollBuddy for Kintone. Create quick polls in comment",
     "ja": "意思決定くん for Kintone. Create quick polls in comment"
   },
   "homepage_url": {

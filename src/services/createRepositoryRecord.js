@@ -1,5 +1,4 @@
 import { KintoneRestAPIClient } from '@kintone/rest-api-client';
-import { REPOSITORY_APP_ID } from './getRepositoryRecord.js';
 
 const client = new KintoneRestAPIClient();
 
@@ -7,9 +6,9 @@ const client = new KintoneRestAPIClient();
  * Create a new repository record for a source app/record, seeded with
  * a single questionnaire row. Returns the new repository record's id.
  */
-export async function createRepositoryRecord(appId, recordId, row) {
+export async function createRepositoryRecord(appId, recordId, row, repoAppId) {
   const { id } = await client.record.addRecord({
-    app: REPOSITORY_APP_ID,
+    app: repoAppId,
     record: {
       appID: { value: String(appId) },
       RecordID: { value: String(recordId) },

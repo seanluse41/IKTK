@@ -2,7 +2,7 @@
 <script>
   import { submitVote } from '../services/submitVote.js';
 
-  let { row, isCreator, hasVoted: hasVotedInitial, repositoryRecord, loginUser } = $props();
+  let { row, isCreator, hasVoted: hasVotedInitial, repositoryRecord, loginUser, repoAppId } = $props();
 
   let castVote = $state(false);
   let selectedLetter = $state(null);
@@ -57,6 +57,7 @@
         row,
         letter: selectedLetter,
         loginUser,
+        repoAppId,
       });
       localVotesValue = updatedVotesValue;
       castVote = true;

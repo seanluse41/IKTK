@@ -7,7 +7,7 @@ import { updateQuestionnaireRow } from './updateRepositoryRecord.js';
  * Returns the new vote counts string so the caller can update its own
  * row.value in place without refetching.
  */
-export async function submitVote({ repositoryRecord, row, letter, loginUser }) {
+export async function submitVote({ repositoryRecord, row, letter, loginUser, repoAppId }) {
   const currentVotes = Object.fromEntries(
     row.votes.value.split(',').filter(Boolean).map((entry) => {
       const [l, count] = entry.split(':');
@@ -33,7 +33,7 @@ export async function submitVote({ repositoryRecord, row, letter, loginUser }) {
     (r) => r.value.commentID.value === row.commentID.value
   )?.id;
 
-  await updateQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, rowId, updatedRowValue);
+  await updateQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, rowId, updatedRowValue, repoAppId);
 
   return votesValue;
 }

@@ -10,7 +10,7 @@ import { scheduleQuestionnaireEnd } from './scheduleQuestionnaireEnd.js';
 // button, wires up its click handler, and inserts it next to the original.
 // No-ops if the mention button isn't present yet, or if our button has
 // already been inserted.
-export function createQuestionnaireButton({ pluginId, appId, recordId, getRepositoryRecord }) {
+export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId, getRepositoryRecord }) {
   const mentionBtn = document.getElementById('+oceanMention');
   if (!mentionBtn || document.getElementById('questionnaire-create-btn')) return;
 
@@ -50,10 +50,10 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, getReposi
 
         let repositoryRecordId;
         if (repositoryRecord) {
-          await addQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, row);
+          await addQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, row, repoAppId);
           repositoryRecordId = repositoryRecord.$id.value;
         } else {
-          repositoryRecordId = await createRepositoryRecord(appId, recordId, row);
+          repositoryRecordId = await createRepositoryRecord(appId, recordId, row, repoAppId);
         }
 
         try {
