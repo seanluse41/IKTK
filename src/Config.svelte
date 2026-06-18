@@ -2,15 +2,19 @@
   let { pluginId } = $props();
   
   let message = $state('');
+  let repoToken = $state('');
 
   const config = kintone.plugin.app.getConfig(pluginId);
   if (config.message) {
     message = config.message;
   }
+  if (config.repoToken) {
+    repoToken = config.repoToken;
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
-    kintone.plugin.app.setConfig({ message }, () => {
+    kintone.plugin.app.setConfig({ message, repoToken }, () => {
       alert('The plug-in settings have been saved. Please update the app!');
       window.location.href = '../../flow?app=' + kintone.app.getId();
     });
@@ -21,17 +25,18 @@
   }
 </script>
 
-<h2 class="settings-heading">Settings for LinkSpy</h2>
-<p class="kintoneplugin-desc">This message is displayed on the app page after the app has been updated.</p>
+<h2 class="settings-heading">意思決定くん設定</h2>
+<p class="kintoneplugin-desc">アプリ毎の設定になりますのでご注意ください。</p>
 
 <form class="js-submit-settings" onsubmit={handleSubmit}>
   <p class="kintoneplugin-row">
-    <label for="message">
-      Message:
-      <input 
-        type="text" 
+    <label for="repoToken">
+      Repository App API Token:
+      <input
+        type="password"
         class="kintoneplugin-input-text"
-        bind:value={message}
+        id="repoToken"
+        bind:value={repoToken}
       />
     </label>
   </p>

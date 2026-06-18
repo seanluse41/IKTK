@@ -27,6 +27,7 @@ kintone.events.on('app.record.detail.show', async () => {
 
   const observer = new MutationObserver(() => {
     createQuestionnaireButton({
+      pluginId: PLUGIN_ID,
       appId,
       recordId,
       getRepositoryRecord: () => repositoryRecord,

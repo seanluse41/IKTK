@@ -4,12 +4,13 @@ import { postComment } from './commentPoster.js';
 import { createRepositoryRecord } from './createRepositoryRecord.js';
 import { addQuestionnaireRow } from './updateRepositoryRecord.js';
 import { buildQuestionnaireRow } from './buildQuestionnaireRow.js';
+import { scheduleQuestionnaireEnd } from './scheduleQuestionnaireEnd.js';
 
 // Clones kintone's native mention button into a "create questionnaire"
 // button, wires up its click handler, and inserts it next to the original.
 // No-ops if the mention button isn't present yet, or if our button has
 // already been inserted.
-export function createQuestionnaireButton({ appId, recordId, getRepositoryRecord }) {
+export function createQuestionnaireButton({ pluginId, appId, recordId, getRepositoryRecord }) {
   const mentionBtn = document.getElementById('+oceanMention');
   if (!mentionBtn || document.getElementById('questionnaire-create-btn')) return;
 
@@ -47,10 +48,27 @@ export function createQuestionnaireButton({ appId, recordId, getRepositoryRecord
         const row = buildQuestionnaireRow(formData, loginUser, commentID);
         const repositoryRecord = getRepositoryRecord();
 
+        let repositoryRecordId;
         if (repositoryRecord) {
           await addQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, row);
+          repositoryRecordId = repositoryRecord.$id.value;
         } else {
-          await createRepositoryRecord(appId, recordId, row);
+          repositoryRecordId = await createRepositoryRecord(appId, recordId, row);
+        }
+
+        try {
+          await scheduleQuestionnaireEnd({
+            pluginId,
+            appId,
+            recordId,
+            commentID,
+            repositoryRecordId,
+            deadline: formData.deadline,
+          });
+        } catch (error) {
+          // Don't block questionnaire creation if scheduling fails —
+          // the questionnaire itself was already created successfully.
+          console.error('Questionnaire created, but end-notification scheduling failed:', error);
         }
       },
     });
