@@ -29,13 +29,15 @@ export function buildQuestionnaireRow(formData, loginUser, commentID) {
     .filter(m => m.type === 'ORGANIZATION')
     .map(({ code }) => ({ code }));
 
+  const endTimeUtc = new Date(deadline).toISOString();
+
   const now = new Date().toISOString();
 
   return {
     commentID: { value: String(commentID) },
     title: { value: title },
     startTime: { value: now },
-    endTime: { value: deadline },
+    endTime: { value: endTimeUtc },
     options: { value: optionsValue },
     votes: { value: votesValue },
     users: { value: users },
