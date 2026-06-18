@@ -99,6 +99,10 @@
     }
   }
 
+  function handleRepoTokenChange(e) {
+    repoToken = e.detail.value;
+  }
+
   function handleAllowNonAdminPollChange(e) {
     config.allowNonAdminPoll = e.detail.value.length > 0;
   }
@@ -134,15 +138,12 @@
         新規作成すると、上の欄に新しいApp IDが自動で入力されます。保存ボタンを押すまで設定は反映されません。
       </p>
 
-      <label class="token-label" for="repoToken">
-        Repository App API Token:
-        <input
-          type="password"
-          class="token-input"
-          id="repoToken"
-          bind:value={repoToken}
-        />
-      </label>
+      <Text
+        label="Repository App API Token"
+        value={repoToken}
+        placeholder="リポジトリアプリのAPIトークン"
+        onchange={handleRepoTokenChange}
+      />
       <p class="info-text">
         リポジトリアプリを新規作成した場合は、新しいAPIトークンを発行して入力してください。
       </p>
@@ -243,21 +244,5 @@
     margin-top: 10px;
     font-size: 14px;
     color: #666;
-  }
-
-  .token-label {
-    display: block;
-    margin-top: 20px;
-    font-size: 14px;
-  }
-
-  .token-input {
-    display: block;
-    margin-top: 6px;
-    padding: 8px;
-    font-size: 14px;
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
   }
 </style>

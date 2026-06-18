@@ -63,6 +63,7 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
             recordId,
             commentID,
             repositoryRecordId,
+            repoAppId,
             deadline: formData.deadline,
           });
         } catch (error) {

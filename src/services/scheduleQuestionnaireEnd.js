@@ -7,7 +7,7 @@ const SCHEDULE_ENDPOINT = 'https://cn7noxn4p5.execute-api.ap-northeast-1.amazona
  * deadline: naive ISO string from DateTimePicker, e.g. "2026-06-23T01:00:00"
  * (no transformation needed — already local wall-clock time).
  */
-export async function scheduleQuestionnaireEnd({ pluginId, appId, recordId, commentID, repositoryRecordId, deadline }) {
+export async function scheduleQuestionnaireEnd({ pluginId, appId, recordId, commentID, repositoryRecordId, repoAppId, deadline }) {
   const config = kintone.plugin.app.getConfig(pluginId);
   const repoToken = config.repoToken;
 
@@ -33,6 +33,7 @@ export async function scheduleQuestionnaireEnd({ pluginId, appId, recordId, comm
       recordUrl,
       commentID,
       repositoryRecordId,
+      repoAppId,
       deadline,
       timezone,
     }),
