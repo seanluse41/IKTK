@@ -49,7 +49,7 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
     wrapper.className = 'itemlist-item-gaia itemlist-item-head-gaia';
     anchorLi.insertAdjacentElement('afterend', wrapper);
 
-    const flags = flagsByCommentID[commentID] ?? { isCreator: false, hasVoted: false };
+    const flags = flagsByCommentID[commentID] ?? { isCreator: false, hasVoted: false, isEnded: false };
 
     mount(Questionnaire, {
       target: wrapper,
@@ -57,6 +57,7 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
         row: row.value,
         isCreator: flags.isCreator,
         hasVoted: flags.hasVoted,
+        isEnded: flags.isEnded,
         repositoryRecord: voteContext.repositoryRecord,
         loginUser: voteContext.loginUser,
         repoAppId: voteContext.repoAppId,

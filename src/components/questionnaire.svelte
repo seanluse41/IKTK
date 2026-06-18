@@ -1,13 +1,21 @@
 <!-- src/components/questionnaire.svelte -->
 <script>
-  import { submitVote } from '../services/submitVote.js';
+  import { submitVote } from "../services/submitVote.js";
 
-  let { row, isCreator, hasVoted: hasVotedInitial, repositoryRecord, loginUser, repoAppId } = $props();
+  let {
+    row,
+    isCreator,
+    hasVoted: hasVotedInitial,
+    isEnded,
+    repositoryRecord,
+    loginUser,
+    repoAppId,
+  } = $props();
 
   let castVote = $state(false);
   let selectedLetter = $state(null);
   let isSubmitting = $state(false);
-  let errorMessage = $state('');
+  let errorMessage = $state("");
 
   let hasVoted = $derived(hasVotedInitial || castVote);
 
@@ -15,12 +23,12 @@
 
   let options = $derived(
     row.options.value
-      .split(';;;')
+      .split(";;;")
       .filter(Boolean)
       .map((entry) => {
-        const [letter, ...rest] = entry.split(':');
-        return { letter: letter.toLowerCase(), label: rest.join(':') };
-      })
+        const [letter, ...rest] = entry.split(":");
+        return { letter: letter.toLowerCase(), label: rest.join(":") };
+      }),
   );
 
   // Local copy so we can bump the count instantly after a successful vote
@@ -29,14 +37,19 @@
 
   let votes = $derived(
     Object.fromEntries(
-      localVotesValue.split(',').filter(Boolean).map((entry) => {
-        const [letter, count] = entry.split(':');
-        return [letter, Number(count) || 0];
-      })
-    )
+      localVotesValue
+        .split(",")
+        .filter(Boolean)
+        .map((entry) => {
+          const [letter, count] = entry.split(":");
+          return [letter, Number(count) || 0];
+        }),
+    ),
   );
 
-  let totalVotes = $derived(Object.values(votes).reduce((sum, v) => sum + v, 0));
+  let totalVotes = $derived(
+    Object.values(votes).reduce((sum, v) => sum + v, 0),
+  );
 
   async function handleVoteClick() {
     if (!selectedLetter || isSubmitting) return;
@@ -44,11 +57,11 @@
     const now = new Date();
     const endTime = new Date(row.endTime.value);
     if (now > endTime) {
-      errorMessage = 'このアンケートは終了しました';
+      errorMessage = "このアンケートは終了しました";
       return;
     }
 
-    errorMessage = '';
+    errorMessage = "";
     isSubmitting = true;
 
     try {
@@ -62,8 +75,8 @@
       localVotesValue = updatedVotesValue;
       castVote = true;
     } catch (error) {
-      console.error('Failed to submit vote:', error);
-      errorMessage = '投票に失敗しました。もう一度お試しください';
+      console.error("Failed to submit vote:", error);
+      errorMessage = "投票に失敗しました。もう一度お試しください";
     } finally {
       isSubmitting = false;
     }
@@ -76,10 +89,11 @@
 <div class="commentlist-body-gaia questionnaire-body">
   <div class="questionnaire-title">{title}</div>
 
-  {#if hasVoted}
+  {#if hasVoted || isEnded}
     {#each options as option}
       {@const count = votes[option.letter] || 0}
-      {@const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100)}
+      {@const percent =
+        totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100)}
       <div class="questionnaire-result-row">
         <div class="questionnaire-result-label">
           <span>{option.label}</span>
@@ -110,7 +124,7 @@
       disabled={!selectedLetter || isSubmitting}
       onclick={handleVoteClick}
     >
-      {isSubmitting ? '送信中...' : '投票する'}
+      {isSubmitting ? "送信中..." : "投票する"}
     </button>
   {/if}
 </div>

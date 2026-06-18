@@ -62,6 +62,7 @@ function buildFlagsByCommentID(rows, loginUser) {
     map[commentID] = {
       isCreator: row.value.creator.value.some((u) => u.code === loginUser.code),
       hasVoted: row.value.votedUsers.value.some((u) => u.code === loginUser.code),
+      isEnded: new Date(row.value.endTime.value) <= new Date(),
     };
   });
   return map;
