@@ -2,10 +2,13 @@
 import { getRepositoryRecord } from '../services/getRepositoryRecord.js';
 import { createQuestionnaireButton } from '../services/questionnaireButtonCreator.js';
 import { insertQuestionnaires } from '../services/questionnaireCommentInsertor.js';
+import { setupI18n } from '../i18n.js';
 
 const PLUGIN_ID = kintone.$PLUGIN_ID;
 
 kintone.events.on('app.record.detail.show', async () => {
+  await setupI18n();
+
   const appId = String(kintone.app.getId());
   const recordId = String(kintone.app.record.getId());
 

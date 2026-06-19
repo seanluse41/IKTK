@@ -1,3 +1,53 @@
 {
-  "helloKintone": "Hello kintone plugin!"
+  "config": {
+    "heading": "PollBuddy Settings",
+    "subtitle": "Note: these settings apply per app.",
+    "repositoryAppSection": "Repository App",
+    "repositoryAppIdLabel": "Repository App ID",
+    "repositoryAppIdPlaceholder": "App ID of the repository app where questionnaire data is stored",
+    "createRepositoryButton": "Create New Repository App",
+    "creatingRepositoryButton": "Creating...",
+    "createRepositoryInfo": "Creating a new app will automatically fill in its App ID above. Settings are not applied until you press Save.",
+    "repositoryTokenLabel": "Repository App API Token",
+    "repositoryTokenPlaceholder": "API token for the repository app",
+    "repositoryTokenInfo": "If you just created a new repository app, issue a new API token and enter it here.",
+    "optionsSection": "Options",
+    "allowNonAdminPollLabel": "Allow non-admin users to create polls",
+    "allowNonAdminPollItem": "Allow users without app management permission to create polls",
+    "saveButton": "Save",
+    "cancelButton": "Cancel",
+    "createRepositoryConfirm": "This will create a new app to store questionnaire data. Continue?",
+    "repositoryAppIdRequired": "Repository App ID is required",
+    "createRepositorySuccess": "Repository app created! App ID: {{appId}}",
+    "createRepositoryError": "Failed to create the repository app",
+    "saveSuccess": "Settings saved!"
+  },
+  "form": {
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter your question",
+    "optionsLabel": "Options",
+    "optionPlaceholder": "Option {{number}}",
+    "addOption": "+ Add option",
+    "deadlineLabel": "Deadline",
+    "mentionsLabel": "Participants",
+    "mentionsPlaceholder": "Search by name or code"
+  },
+  "questionnaire": {
+    "badge": "Poll",
+    "votesCount": "{{count}} vote ({{percent}}%)",
+    "votesCount_plural": "{{count}} votes ({{percent}}%)",
+    "voteButton": "Vote",
+    "votingButton": "Submitting...",
+    "votingClosedError": "This poll has closed",
+    "voteSubmitError": "Failed to submit your vote. Please try again"
+  },
+  "questionnaireButton": {
+    "mentionButtonLabel": "アンケート",
+    "mentionButtonTitle": "アンケートを作成する",
+    "dialogTitle": "アンケートを作成",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "commentBody": "アンケートが開始されました: {{title}}\n回答期限: {{deadline}}",
+    "dateLocale": "ja-JP"
+  }
 }

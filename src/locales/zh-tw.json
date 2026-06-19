@@ -1,0 +1,52 @@
+{
+  "config": {
+    "heading": "PollBuddy 設定",
+    "subtitle": "此為各應用程式個別設定，請注意。",
+    "repositoryAppSection": "Repository App",
+    "repositoryAppIdLabel": "Repository App ID",
+    "repositoryAppIdPlaceholder": "用於儲存問卷資料的儲存庫應用程式 App ID",
+    "createRepositoryButton": "建立新的儲存庫應用程式",
+    "creatingRepositoryButton": "建立中...",
+    "createRepositoryInfo": "建立後，上方欄位會自動帶入新的 App ID。按下儲存按鈕後設定才會生效。",
+    "repositoryTokenLabel": "Repository App API Token",
+    "repositoryTokenPlaceholder": "儲存庫應用程式的 API Token",
+    "repositoryTokenInfo": "若您剛建立新的儲存庫應用程式，請發行新的 API Token 並輸入於此。",
+    "optionsSection": "Options",
+    "allowNonAdminPollLabel": "Allow non-admin users to create polls",
+    "allowNonAdminPollItem": "允許未具有應用程式管理權限的使用者建立問卷",
+    "saveButton": "Save",
+    "cancelButton": "Cancel",
+    "createRepositoryConfirm": "即將建立用於儲存問卷資料的新應用程式，是否繼續？",
+    "repositoryAppIdRequired": "Repository App ID 為必填項目",
+    "createRepositorySuccess": "已建立儲存庫應用程式！App ID：{{appId}}",
+    "createRepositoryError": "建立儲存庫應用程式失敗",
+    "saveSuccess": "設定已儲存！"
+  },
+  "form": {
+    "titleLabel": "標題",
+    "titlePlaceholder": "請輸入問題",
+    "optionsLabel": "選項",
+    "optionPlaceholder": "選項 {{number}}",
+    "addOption": "＋ 新增選項",
+    "deadlineLabel": "截止時間",
+    "mentionsLabel": "參與者",
+    "mentionsPlaceholder": "以名稱或代碼搜尋"
+  },
+  "questionnaire": {
+    "badge": "問卷",
+    "votesCount": "{{count}} 票 ({{percent}}%)",
+    "voteButton": "投票",
+    "votingButton": "送出中...",
+    "votingClosedError": "此問卷已結束",
+    "voteSubmitError": "投票失敗，請再試一次"
+  },
+  "questionnaireButton": {
+    "mentionButtonLabel": "問卷",
+    "mentionButtonTitle": "建立問卷",
+    "dialogTitle": "建立問卷",
+    "createButton": "建立",
+    "cancelButton": "取消",
+    "commentBody": "問卷已開始：{{title}}\n截止時間：{{deadline}}",
+    "dateLocale": "zh-TW"
+  }
+}

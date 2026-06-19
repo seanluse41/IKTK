@@ -6,10 +6,11 @@ import { addQuestionnaireRow } from './updateRepositoryRecord.js';
 import { buildQuestionnaireRow } from './buildQuestionnaireRow.js';
 import { scheduleQuestionnaireEnd } from './scheduleQuestionnaireEnd.js';
 import { validateFormData } from './validateFormData.js';
+import { t } from '../t.js';
 
 function formatDeadline(deadline) {
   const d = new Date(deadline);
-  return d.toLocaleString('ja-JP', {
+  return d.toLocaleString(t('questionnaireButton.dateLocale'), {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
@@ -24,19 +25,19 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
 
   const btn = mentionBtn.cloneNode(true);
   btn.id = 'questionnaire-create-btn';
-  btn.title = 'アンケートを作成する';
-  btn.querySelector('.ocean-ui-editor-toolbar-mention-button').textContent = 'アンケート';
+  btn.title = t('questionnaireButton.mentionButtonTitle');
+  btn.querySelector('.ocean-ui-editor-toolbar-mention-button').textContent = t('questionnaireButton.mentionButtonLabel');
 
   btn.addEventListener('click', async () => {
     const body = document.createElement('div');
     const form = mount(Form, { target: body, props: { appId, recordId } });
 
     const dialog = await kintone.createDialog({
-      title: 'アンケートを作成',
+      title: t('questionnaireButton.dialogTitle'),
       body,
-      okButtonText: '作成',
+      okButtonText: t('questionnaireButton.createButton'),
       showCancelButton: true,
-      cancelButtonText: 'キャンセル',
+      cancelButtonText: t('questionnaireButton.cancelButton'),
       showCloseButton: true,
       beforeClose: async (action) => {
         if (action !== 'OK') return;
@@ -55,7 +56,10 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
           app: appId,
           record: recordId,
           comment: {
-            text: `アンケートが開始されました: ${formData.title}\n回答期限: ${formatDeadline(formData.deadline)}`,
+            text: t('questionnaireButton.commentBody', {
+              title: formData.title,
+              deadline: formatDeadline(formData.deadline),
+            }),
             mentions: formData.mentions,
           },
         });

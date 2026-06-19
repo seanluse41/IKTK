@@ -2,6 +2,7 @@
   import Text from "../builders/desktop/text.svelte";
   import DateTimePicker from "../builders/desktop/datetimepicker.svelte";
   import MentionTextarea from "./mentionTextArea.svelte";
+  import { t } from "../t.js";
 
   let { appId, recordId } = $props();
 
@@ -35,33 +36,33 @@
   style="display:flex; flex-direction:column; gap:16px; min-width:400px; padding:24px;"
 >
   <Text
-    label="タイトル"
+    label={t('form.titleLabel')}
     value={title}
-    placeholder="質問を入力してください"
+    placeholder={t('form.titlePlaceholder')}
     requiredIcon={true}
     onchange={(e) => (title = e.detail.value)}
   />
 
   <div>
-    <div style="font-size:14px; margin-bottom:8px;">選択肢</div>
+    <div style="font-size:14px; margin-bottom:8px;">{t('form.optionsLabel')}</div>
     {#each options as option, i}
       <div style="margin-bottom:8px;">
         <Text
           value={option}
-          placeholder={`選択肢 ${i + 1}`}
+          placeholder={t('form.optionPlaceholder', { number: i + 1 })}
           onchange={(e) => updateOption(i, e.detail.value)}
         />
       </div>
     {/each}
     {#if options.length < MAX_OPTIONS}
       <button onclick={addOption} style="cursor:pointer;"
-        >＋ 選択肢を追加</button
+        >{t('form.addOption')}</button
       >
     {/if}
   </div>
 
   <DateTimePicker
-    label="締め切り"
+    label={t('form.deadlineLabel')}
     requiredIcon={true}
     onchange={(e) => {
       console.log("DateTimePicker onchange detail:", e.detail);

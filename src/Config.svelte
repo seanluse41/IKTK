@@ -4,6 +4,7 @@
   import Checkbox from './builders/desktop/checkbox.svelte';
   import Notification from './builders/desktop/notification.svelte';
   import { createRepositoryApp } from './services/createRepositoryApp.js';
+  import { t } from './t.js';
 
   let { pluginId } = $props();
 
@@ -43,7 +44,7 @@
   }
 
   async function handleCreateRepository() {
-    const confirmed = confirm('アンケートデータを保存する新しいアプリを作成します。よろしいですか？');
+    const confirmed = confirm(t('config.createRepositoryConfirm'));
     if (!confirmed) return;
 
     isCreatingApp = true;
@@ -57,10 +58,10 @@
         repoToken = '';
       }
 
-      showSuccess(`リポジトリアプリを作成しました！App ID: ${newAppId}`);
+      showSuccess(t('config.createRepositorySuccess', { appId: newAppId }));
     } catch (error) {
       console.error('Failed to create repository app:', error);
-      showError('リポジトリアプリの作成に失敗しました');
+      showError(t('config.createRepositoryError'));
     } finally {
       isCreatingApp = false;
     }
@@ -70,8 +71,8 @@
     e.preventDefault();
 
     if (!config.repoAppId.trim()) {
-      repoAppIdError = 'Repository App ID は必須項目です';
-      showError('Repository App ID is required');
+      repoAppIdError = t('config.repositoryAppIdRequired');
+      showError(t('config.repositoryAppIdRequired'));
       return;
     }
     repoAppIdError = '';
@@ -81,7 +82,7 @@
       repoAppId: config.repoAppId,
       allowNonAdminPoll: String(config.allowNonAdminPoll),
     }, () => {
-      showSuccess('設定を保存しました！');
+      showSuccess(t('config.saveSuccess'));
       setTimeout(() => {
         window.location.href = '../../flow?app=' + kintone.app.getId();
       }, 2000);
@@ -109,17 +110,17 @@
 </script>
 
 <div class="config-container">
-  <h1>意思決定くん設定</h1>
-  <p class="subtitle">アプリ毎の設定になりますのでご注意ください。</p>
+  <h1>{t('config.heading')}</h1>
+  <p class="subtitle">{t('config.subtitle')}</p>
 
   <form onsubmit={handleSubmit}>
     <div class="section">
-      <h2>Repository App</h2>
+      <h2>{t('config.repositoryAppSection')}</h2>
 
       <Text
-        label="Repository App ID"
+        label={t('config.repositoryAppIdLabel')}
         value={config.repoAppId}
-        placeholder="アンケートデータを保存するリポジトリアプリのApp ID"
+        placeholder={t('config.repositoryAppIdPlaceholder')}
         requiredIcon={true}
         error={repoAppIdError}
         onchange={handleRepoAppIdChange}
@@ -127,7 +128,7 @@
 
       <div class="button-group">
         <Button
-          text={isCreatingApp ? '作成中...' : 'リポジトリアプリを新規作成'}
+          text={isCreatingApp ? t('config.creatingRepositoryButton') : t('config.createRepositoryButton')}
           type="normal"
           disabled={isCreatingApp}
           onclick={handleCreateRepository}
@@ -135,27 +136,27 @@
       </div>
 
       <p class="info-text">
-        新規作成すると、上の欄に新しいApp IDが自動で入力されます。保存ボタンを押すまで設定は反映されません。
+        {t('config.createRepositoryInfo')}
       </p>
 
       <Text
-        label="Repository App API Token"
+        label={t('config.repositoryTokenLabel')}
         value={repoToken}
-        placeholder="リポジトリアプリのAPIトークン"
+        placeholder={t('config.repositoryTokenPlaceholder')}
         onchange={handleRepoTokenChange}
       />
       <p class="info-text">
-        リポジトリアプリを新規作成した場合は、新しいAPIトークンを発行して入力してください。
+        {t('config.repositoryTokenInfo')}
       </p>
     </div>
 
     <div class="section">
-      <h2>Options</h2>
+      <h2>{t('config.optionsSection')}</h2>
 
       <div class="checkbox-container">
         <Checkbox
-          label="Allow non-admin users to create polls"
-          items={[{ label: 'アプリの管理者権限を持たないユーザーにもアンケート作成を許可する', value: 'allowNonAdminPoll' }]}
+          label={t('config.allowNonAdminPollLabel')}
+          items={[{ label: t('config.allowNonAdminPollItem'), value: 'allowNonAdminPoll' }]}
           value={config.allowNonAdminPoll ? ['allowNonAdminPoll'] : []}
           onchange={handleAllowNonAdminPollChange}
         />
@@ -164,13 +165,13 @@
 
     <div class="form-actions">
       <Button
-        text="Save"
+        text={t('config.saveButton')}
         type="submit"
         onclick={handleSubmit}
       />
 
       <Button
-        text="Cancel"
+        text={t('config.cancelButton')}
         type="normal"
         onclick={handleCancel}
       />

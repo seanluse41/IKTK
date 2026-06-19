@@ -1,3 +1,52 @@
 {
-  "helloKintone": "ようこそ kintone プラグイン！"
+  "config": {
+    "heading": "意思決定くん設定",
+    "subtitle": "アプリ毎の設定になりますのでご注意ください。",
+    "repositoryAppSection": "Repository App",
+    "repositoryAppIdLabel": "Repository App ID",
+    "repositoryAppIdPlaceholder": "アンケートデータを保存するリポジトリアプリのApp ID",
+    "createRepositoryButton": "リポジトリアプリを新規作成",
+    "creatingRepositoryButton": "作成中...",
+    "createRepositoryInfo": "新規作成すると、上の欄に新しいApp IDが自動で入力されます。保存ボタンを押すまで設定は反映されません。",
+    "repositoryTokenLabel": "Repository App API Token",
+    "repositoryTokenPlaceholder": "リポジトリアプリのAPIトークン",
+    "repositoryTokenInfo": "リポジトリアプリを新規作成した場合は、新しいAPIトークンを発行して入力してください。",
+    "optionsSection": "Options",
+    "allowNonAdminPollLabel": "Allow non-admin users to create polls",
+    "allowNonAdminPollItem": "アプリの管理者権限を持たないユーザーにもアンケート作成を許可する",
+    "saveButton": "Save",
+    "cancelButton": "Cancel",
+    "createRepositoryConfirm": "アンケートデータを保存する新しいアプリを作成します。よろしいですか？",
+    "repositoryAppIdRequired": "Repository App ID は必須項目です",
+    "createRepositorySuccess": "リポジトリアプリを作成しました！App ID: {{appId}}",
+    "createRepositoryError": "リポジトリアプリの作成に失敗しました",
+    "saveSuccess": "設定を保存しました！"
+  },
+  "form": {
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "質問を入力してください",
+    "optionsLabel": "選択肢",
+    "optionPlaceholder": "選択肢 {{number}}",
+    "addOption": "＋ 選択肢を追加",
+    "deadlineLabel": "締め切り",
+    "mentionsLabel": "参加者",
+    "mentionsPlaceholder": "名前またはコードで検索"
+  },
+  "questionnaire": {
+    "badge": "アンケート",
+    "votesCount": "{{count}}票 ({{percent}}%)",
+    "voteButton": "投票する",
+    "votingButton": "送信中...",
+    "votingClosedError": "このアンケートは終了しました",
+    "voteSubmitError": "投票に失敗しました。もう一度お試しください"
+  },
+  "questionnaireButton": {
+    "mentionButtonLabel": "アンケート",
+    "mentionButtonTitle": "アンケートを作成する",
+    "dialogTitle": "アンケートを作成",
+    "createButton": "作成",
+    "cancelButton": "キャンセル",
+    "commentBody": "アンケートが開始されました: {{title}}\n回答期限: {{deadline}}",
+    "dateLocale": "ja-JP"
+  }
 }

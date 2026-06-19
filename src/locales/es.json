@@ -1,0 +1,53 @@
+{
+    "config": {
+        "heading": "Configuración de PollBuddy",
+        "subtitle": "Ten en cuenta que esta configuración se aplica por aplicación.",
+        "repositoryAppSection": "Repository App",
+        "repositoryAppIdLabel": "Repository App ID",
+        "repositoryAppIdPlaceholder": "App ID de la aplicación repositorio donde se guardan los datos de las encuestas",
+        "createRepositoryButton": "Crear nueva aplicación repositorio",
+        "creatingRepositoryButton": "Creando...",
+        "createRepositoryInfo": "Al crearla, el nuevo App ID se rellenará automáticamente arriba. Los cambios no se aplican hasta que pulses Guardar.",
+        "repositoryTokenLabel": "Repository App API Token",
+        "repositoryTokenPlaceholder": "Token de API de la aplicación repositorio",
+        "repositoryTokenInfo": "Si acabas de crear una nueva aplicación repositorio, genera un nuevo token de API e introdúcelo aquí.",
+        "optionsSection": "Options",
+        "allowNonAdminPollLabel": "Allow non-admin users to create polls",
+        "allowNonAdminPollItem": "Permitir crear encuestas a usuarios sin permisos de administración de la aplicación",
+        "saveButton": "Save",
+        "cancelButton": "Cancel",
+        "createRepositoryConfirm": "Se creará una nueva aplicación para guardar los datos de las encuestas. ¿Deseas continuar?",
+        "repositoryAppIdRequired": "El Repository App ID es obligatorio",
+        "createRepositorySuccess": "¡Aplicación repositorio creada! App ID: {{appId}}",
+        "createRepositoryError": "No se pudo crear la aplicación repositorio",
+        "saveSuccess": "¡Configuración guardada!"
+    },
+    "form": {
+        "titleLabel": "Título",
+        "titlePlaceholder": "Escribe tu pregunta",
+        "optionsLabel": "Opciones",
+        "optionPlaceholder": "Opción {{number}}",
+        "addOption": "+ Añadir opción",
+        "deadlineLabel": "Fecha límite",
+        "mentionsLabel": "Participantes",
+        "mentionsPlaceholder": "Buscar por nombre o código"
+    },
+    "questionnaire": {
+        "badge": "Encuesta",
+        "votesCount": "{{count}} voto ({{percent}}%)",
+        "votesCount_plural": "{{count}} votos ({{percent}}%)",
+        "voteButton": "Votar",
+        "votingButton": "Enviando...",
+        "votingClosedError": "Esta encuesta ha finalizado",
+        "voteSubmitError": "No se pudo enviar tu voto. Inténtalo de nuevo"
+    },
+    "questionnaireButton": {
+        "mentionButtonLabel": "Encuesta",
+        "mentionButtonTitle": "Crear una encuesta",
+        "dialogTitle": "Crear una encuesta",
+        "createButton": "Crear",
+        "cancelButton": "Cancelar",
+        "commentBody": "Se ha iniciado una encuesta: {{title}}\nFecha límite: {{deadline}}",
+        "dateLocale": "es-ES"
+    }
+}

@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import { searchDirectory } from "../services/directorySearch.js";
+  import { t } from "../t.js";
 
   let { appId, recordId, mentions = $bindable([]) } = $props();
 
@@ -85,7 +86,7 @@
 </script>
 
 <div style="position:relative;">
-  <label style="font-size:14px; display:block; margin-bottom:6px;">参加者</label
+  <label style="font-size:14px; display:block; margin-bottom:6px;">{t('form.mentionsLabel')}</label
   >
   <input
     bind:this={input}
@@ -94,7 +95,7 @@
     onkeydown={handleKeydown}
     type="text"
     style="width:100%; box-sizing:border-box; padding:8px; font-size:14px;"
-    placeholder="名前またはコードで検索"
+    placeholder={t('form.mentionsPlaceholder')}
   />
 
   {#if mentions.length > 0}
@@ -116,7 +117,7 @@
           <button
             type="button"
             onclick={() => removeMention(i)}
-            aria-label="削除"
+            aria-label={t('common.remove')}
             style="
               border:none;
               background:none;

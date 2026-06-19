@@ -2,6 +2,8 @@ import i18next from 'i18next';
 
 import enTranslations from './locales/en.json';
 import jaTranslations from './locales/ja.json';
+import esTranslations from './locales/es.json';
+import zhtwTranslations from './locales/zh-tw.json';
 
 export const setupI18n = async () => {
   const userLanguage = await getUserLanguage();
@@ -12,6 +14,8 @@ export const setupI18n = async () => {
     resources: {
       en: { translation: enTranslations },
       ja: { translation: jaTranslations },
+      es: { translation: esTranslations },
+      "zh-TW": { translation: zhtwTranslations },
     },
   });
 

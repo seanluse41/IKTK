@@ -1,6 +1,7 @@
 <!-- src/components/questionnaire.svelte -->
 <script>
   import { submitVote } from "../services/submitVote.js";
+  import { t } from "../t.js";
 
   let {
     row,
@@ -57,7 +58,7 @@
     const now = new Date();
     const endTime = new Date(row.endTime.value);
     if (now > endTime) {
-      errorMessage = "このアンケートは終了しました";
+      errorMessage = t('questionnaire.votingClosedError');
       return;
     }
 
@@ -76,7 +77,7 @@
       castVote = true;
     } catch (error) {
       console.error("Failed to submit vote:", error);
-      errorMessage = "投票に失敗しました。もう一度お試しください";
+      errorMessage = t('questionnaire.voteSubmitError');
     } finally {
       isSubmitting = false;
     }
@@ -84,7 +85,7 @@
 </script>
 
 <div class="itemlist-head-gaia">
-  <div class="itemlist-user-gaia questionnaire-label">📊 アンケート</div>
+  <div class="itemlist-user-gaia questionnaire-label">📊 {t('questionnaire.badge')}</div>
 </div>
 <div class="commentlist-body-gaia questionnaire-body">
   <div class="questionnaire-title">{title}</div>
@@ -97,7 +98,7 @@
       <div class="questionnaire-result-row">
         <div class="questionnaire-result-label">
           <span>{option.label}</span>
-          <span>{count}票 ({percent}%)</span>
+          <span>{t('questionnaire.votesCount', { count, percent })}</span>
         </div>
         <div class="questionnaire-bar-track">
           <div class="questionnaire-bar-fill" style="width: {percent}%;"></div>
@@ -124,7 +125,7 @@
       disabled={!selectedLetter || isSubmitting}
       onclick={handleVoteClick}
     >
-      {isSubmitting ? "送信中..." : "投票する"}
+      {isSubmitting ? t('questionnaire.votingButton') : t('questionnaire.voteButton')}
     </button>
   {/if}
 </div>
