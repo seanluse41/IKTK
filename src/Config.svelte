@@ -1,185 +1,117 @@
 <script>
-  import { Button, Checkbox, Notification, Text } from 'kintone-ui-component';
-  import { createRepositoryApp } from './services/createRepositoryApp.js';
+  import { Button } from 'kintone-ui-component';
+  import DangerZone from './components/config/DangerZone.svelte';
+  import Dialog from './components/config/Dialog.svelte';
+  import FieldGroup from './components/config/FieldGroup.svelte';
+  import InitialSetup from './components/config/InitialSetup.svelte';
+  import Notice from './components/config/Notice.svelte';
+  import Settings from './components/config/Settings.svelte';
+  import Spinner from './components/config/Spinner.svelte';
+  import { place } from './components/config/place.js';
+  import { verifyAppToken } from './config/appToken.js';
+  import { setAppToken } from './config/pluginConfig.js';
+  import { appId, fail, loadDomain, saveConfig, settings, ui, watchProvision } from './config/state.svelte.js';
   import { t } from './i18n.js';
 
-  let { pluginId } = $props();
+  // Open on first visit, closed once this app is fully set up.
+  const setupDone = Boolean(settings.endpoint && settings.appToken);
 
-  const savedConfig = kintone.plugin.app.getConfig(pluginId);
-
-  const repoAppIdField = new Text({
-    label: t('config.repositoryAppIdLabel'),
-    value: savedConfig.repoAppId || '',
-    placeholder: t('config.repositoryAppIdPlaceholder'),
-    requiredIcon: true,
-  });
-
-  const repoTokenField = new Text({
-    label: t('config.repositoryTokenLabel'),
-    value: savedConfig.repoToken || '',
-    placeholder: t('config.repositoryTokenPlaceholder'),
-  });
-
-  const allowNonAdminPollField = new Checkbox({
-    label: t('config.allowNonAdminPollLabel'),
-    items: [{ label: t('config.allowNonAdminPollItem'), value: 'allowNonAdminPoll' }],
-    value: savedConfig.allowNonAdminPoll === 'true' ? ['allowNonAdminPoll'] : [],
-  });
-
-  const createRepositoryButton = new Button({ text: t('config.createRepositoryButton'), type: 'normal' });
-  const saveButton = new Button({ text: t('config.saveButton'), type: 'submit' });
   const cancelButton = new Button({ text: t('config.cancelButton'), type: 'normal' });
+  const saveButton = new Button({ text: t('config.saveButton'), type: 'submit' });
 
-  const notification = new Notification({ duration: 2000 });
-
-  function notify(type, text) {
-    notification.type = type;
-    notification.text = text;
-    notification.open();
-  }
-
-  repoAppIdField.addEventListener('change', () => {
-    repoAppIdField.error = '';
+  cancelButton.addEventListener('click', () => {
+    window.location.href = `../../${appId}/plugin/`;
   });
 
-  createRepositoryButton.addEventListener('click', async () => {
-    if (!confirm(t('config.createRepositoryConfirm'))) return;
-
-    createRepositoryButton.disabled = true;
-    createRepositoryButton.text = t('config.creatingRepositoryButton');
-
-    try {
-      const newAppId = await createRepositoryApp();
-      repoAppIdField.value = String(newAppId);
-      repoAppIdField.error = '';
-      // A token for the old repository app won't work against the new one
-      repoTokenField.value = '';
-
-      notify('success', t('config.createRepositorySuccess', { appId: newAppId }));
-    } catch (error) {
-      console.error('Failed to create repository app:', error);
-      notify('danger', t('config.createRepositoryError'));
-    } finally {
-      createRepositoryButton.disabled = false;
-      createRepositoryButton.text = t('config.createRepositoryButton');
-    }
-  });
-
-  saveButton.addEventListener('click', () => {
-    const repoAppId = repoAppIdField.value.trim();
-
-    if (!repoAppId) {
-      repoAppIdField.error = t('config.repositoryAppIdRequired');
-      notify('danger', t('config.repositoryAppIdRequired'));
+  const save = async () => {
+    if (!settings.repoAppId.trim()) {
+      ui.dialog = { title: t('config.errorLabel'), content: t('config.repositoryAppIdRequired'), icon: 'error' };
       return;
     }
 
-    kintone.plugin.app.setConfig({
-      repoToken: repoTokenField.value.trim(),
-      repoAppId,
-      allowNonAdminPoll: String(allowNonAdminPollField.value.length > 0),
-    }, () => {
-      notify('success', t('config.saveSuccess'));
-      setTimeout(() => {
-        window.location.href = '../../flow?app=' + kintone.app.getId();
-      }, 2000);
-    });
-  });
+    ui.busy = true;
+    try {
+      const appToken = settings.appToken.trim();
+      if (appToken) {
+        if (!settings.endpoint) throw new Error(t('config.completeStep3First'));
+        // Caught here, not later by every user who opens a record.
+        await verifyAppToken(appToken);
+        await setAppToken(settings.endpoint, appToken);
+      }
 
-  cancelButton.addEventListener('click', () => {
-    window.location.href = '../../' + kintone.app.getId() + '/plugin/';
-  });
+      await saveConfig();
 
-  const place = (...elements) => (node) => {
-    node.append(...elements);
+      ui.dialog = {
+        title: t('config.successLabel'),
+        content: t('config.saveSuccess'),
+        icon: 'success',
+        onclose: () => {
+          window.location.href = `../../flow?app=${appId}`;
+        },
+      };
+    } catch (error) {
+      fail(error, 'config.saveError');
+    } finally {
+      ui.busy = false;
+    }
   };
 
-  // Notification appends itself to document.body on open(), outside this
-  // component, so it has to be removed by hand. See the KUC section of the README.
-  const removeNotification = () => () => notification.remove();
+  saveButton.addEventListener('click', save);
+
+  loadDomain();
+  watchProvision();
 </script>
 
-<div class="config-container" {@attach removeNotification}>
-  <h1>{t('config.heading')}</h1>
-  <p class="subtitle">{t('config.subtitle')}</p>
+<h2>{t('config.heading')}</h2>
+<p>{t('config.subtitle')}</p>
 
-  <div class="section">
-    <h2>{t('config.repositoryAppSection')}</h2>
+<div class="groups">
+  <FieldGroup label={t('config.settingsSection')} expanded>
+    <Settings />
+  </FieldGroup>
 
-    <div {@attach place(repoAppIdField)}></div>
+  <FieldGroup label={t('config.initialSetupSection')} expanded={!setupDone}>
+    <InitialSetup />
+  </FieldGroup>
 
-    <div class="button-group" {@attach place(createRepositoryButton)}></div>
-
-    <p class="info-text">
-      {t('config.createRepositoryInfo')}
-    </p>
-
-    <div {@attach place(repoTokenField)}></div>
-    <p class="info-text">
-      {t('config.repositoryTokenInfo')}
-    </p>
-  </div>
-
-  <div class="section">
-    <h2>{t('config.optionsSection')}</h2>
-
-    <div class="checkbox-container" {@attach place(allowNonAdminPollField)}></div>
-  </div>
-
-  <div class="form-actions" {@attach place(saveButton, cancelButton)}></div>
+  <FieldGroup label={t('config.dangerZoneSection')} danger>
+    <DangerZone />
+  </FieldGroup>
 </div>
 
+<div class="submit" {@attach place(cancelButton, saveButton)}></div>
+
+<Dialog bind:dialog={ui.dialog} />
+<Notice bind:notice={ui.notice} />
+<Spinner open={ui.busy} />
+
 <style>
-  .config-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+  /* The token prompt (config/tokenPrompt.js) is built in JS and shown in a
+     KUC Dialog, outside every component. */
+  :global(.repository-token-help) {
+    color: #6b7775;
+    margin: 4px 0 0;
   }
 
-  h1 {
-    font-size: 24px;
-    margin-bottom: 4px;
-  }
-
-  .subtitle {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: #666;
-  }
-
-  h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    margin-top: 0;
-  }
-
-  .section {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 4px;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-  }
-
-  .checkbox-container {
-    margin-bottom: 15px;
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-
-  .info-text {
-    margin-top: 10px;
+  :global(.settings) {
+    max-width: 720px;
+    padding: 16px;
     font-size: 14px;
-    color: #666;
+    line-height: 1.6;
+  }
+
+  .groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .submit {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    border-top: 1px solid #e3e7e8;
+    padding-top: 16px;
   }
 </style>

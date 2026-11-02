@@ -22,12 +22,12 @@ import Questionnaire from '../components/questionnaire.svelte';
 // it's replaced.
 const mounted = new Map();
 
-export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
+export function insertQuestionnaires(polls, context) {
   const lists = document.querySelectorAll('.itemlist-gaia');
   if (lists.length === 0) return;
 
-  rows.forEach((row) => {
-    const commentID = row.value.commentID.value;
+  polls.forEach((poll) => {
+    const { commentID } = poll;
 
     const selector = `a[href*="comment=${commentID}"]`;
     let anchorLink = null;
@@ -58,20 +58,9 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
     wrapper.className = 'itemlist-item-gaia itemlist-item-head-gaia';
     anchorLi.insertAdjacentElement('afterend', wrapper);
 
-    const flags = flagsByCommentID[commentID] ?? { isCreator: false, hasVoted: false, isEnded: false };
-
     const component = mount(Questionnaire, {
       target: wrapper,
-      props: {
-        row: row.value,
-        isCreator: flags.isCreator,
-        hasVoted: flags.hasVoted,
-        isEnded: flags.isEnded,
-        repositoryRecordId: voteContext.repositoryRecordId,
-        loginUser: voteContext.loginUser,
-        repoAppId: voteContext.repoAppId,
-        onRepositoryUpdate: voteContext.onRepositoryUpdate,
-      },
+      props: { poll, ...context },
     });
 
     mounted.set(wrapperId, { wrapper, component });

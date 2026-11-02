@@ -1,9 +1,7 @@
 import { mount, unmount } from 'svelte';
 import Form from '../components/form.svelte';
 import { postComment } from './commentPoster.js';
-import { addQuestionnaireRow } from './updateRepositoryRecord.js';
-import { buildQuestionnaireRow } from './buildQuestionnaireRow.js';
-import { scheduleQuestionnaireEnd } from './scheduleQuestionnaireEnd.js';
+import { createPoll, errorMessage } from './iktkApi.js';
 import { validateFormData } from './validateFormData.js';
 import { t } from '../i18n.js';
 
@@ -57,7 +55,7 @@ function createNativeButton(mentionBtn) {
   return btn;
 }
 
-export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId, onRepositoryUpdate }) {
+export function createQuestionnaireButton({ appId, recordId, onPollChange }) {
   if (document.getElementById('questionnaire-create-btn')) return;
 
   const insertionPoint = findInsertionPoint();
@@ -102,35 +100,45 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
 
         const loginUser = kintone.getLoginUser();
 
-        const commentID = await postComment({
-          app: appId,
-          record: recordId,
-          comment: {
-            text: t('questionnaireButton.commentBody', {
-              title: formData.title,
-              deadline: formatDeadline(formData.deadline),
-            }),
-            mentions: formData.mentions,
-          },
-        });
-
-        const row = buildQuestionnaireRow(formData, loginUser, commentID);
-        const repositoryRecord = await addQuestionnaireRow(appId, recordId, row, repoAppId);
-        const repositoryRecordId = repositoryRecord.$id.value;
-        onRepositoryUpdate(repositoryRecord);
-
+        // The announcement is posted as the user, so Kintone records who
+        // created the poll; the server reads it back to confirm both.
+        let commentID;
         try {
-          await scheduleQuestionnaireEnd({
-            pluginId,
+          commentID = await postComment({
+            app: appId,
+            record: recordId,
+            comment: {
+              text: t('questionnaireButton.commentBody', {
+                title: formData.title,
+                deadline: formatDeadline(formData.deadline),
+              }),
+              mentions: formData.mentions,
+            },
+          });
+        } catch (error) {
+          console.error('Could not post the poll comment:', error);
+          kintone.showNotification('ERROR', error.message || t('errors.generic'));
+          return false;
+        }
+
+        // The comment is already up, so the dialog closes either way: trying
+        // again from it would post a second announcement.
+        try {
+          const { poll } = await createPoll({
             appId,
             recordId,
             commentID,
-            repositoryRecordId,
-            repoAppId,
-            deadline: formData.deadline,
+            title: formData.title,
+            options: formData.options,
+            // The picker's value is local wall-clock time with no offset; the
+            // browser knows the offset, so convert here and send UTC.
+            deadline: new Date(formData.deadline).toISOString(),
+            language: loginUser.language,
           });
+          onPollChange(poll);
         } catch (error) {
-          console.error('Questionnaire created, but end-notification scheduling failed:', error);
+          console.error('The poll comment was posted, but the poll could not be saved:', error);
+          kintone.showNotification('ERROR', t('errors.createFailed', { message: errorMessage(error) }));
         }
       },
     });

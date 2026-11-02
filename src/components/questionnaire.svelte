@@ -1,53 +1,25 @@
 <!-- src/components/questionnaire.svelte -->
 <script>
-  import { submitVote } from "../services/submitVote.js";
+  import { untrack } from "svelte";
+  import { errorMessage, votePoll } from "../services/iktkApi.js";
   import { t } from "../i18n.js";
 
-  let {
-    row,
-    isCreator,
-    hasVoted: hasVotedInitial,
-    isEnded,
-    repositoryRecordId,
-    loginUser,
-    repoAppId,
-    onRepositoryUpdate,
-  } = $props();
+  // poll: { commentID, title, options, votes, endTime, isEnded, hasVoted },
+  // as the server returned it for this user.
+  let { poll, appId, recordId, loginUser, onPollChange } = $props();
 
-  let castVote = $state(false);
+  // Snapshots: this component is remounted whenever Kintone re-renders the
+  // comments, so it only needs the poll as it was when mounted.
+  const initial = untrack(() => poll);
+  const { commentID, title, options, endTime, isEnded } = initial;
+
+  let hasVoted = $state(initial.hasVoted);
   let selectedLetter = $state(null);
   let isSubmitting = $state(false);
-  let errorMessage = $state("");
+  let errorMessageText = $state("");
 
-  let hasVoted = $derived(hasVotedInitial || castVote);
-
-  let title = $derived(row.title.value);
-
-  let options = $derived(
-    row.options.value
-      .split(";;;")
-      .filter(Boolean)
-      .map((entry) => {
-        const [letter, ...rest] = entry.split(":");
-        return { letter: letter.toLowerCase(), label: rest.join(":") };
-      }),
-  );
-
-  // Local copy so we can bump the count instantly after a successful vote
-  // without waiting on a parent re-render / refetch.
-  let localVotesValue = $state(row.votes.value);
-
-  let votes = $derived(
-    Object.fromEntries(
-      localVotesValue
-        .split(",")
-        .filter(Boolean)
-        .map((entry) => {
-          const [letter, count] = entry.split(":");
-          return [letter, Number(count) || 0];
-        }),
-    ),
-  );
+  // Bumped from the server's answer after a vote, without a refetch.
+  let votes = $state(initial.votes);
 
   let totalVotes = $derived(
     Object.values(votes).reduce((sum, v) => sum + v, 0),
@@ -56,30 +28,30 @@
   async function handleVoteClick() {
     if (!selectedLetter || isSubmitting) return;
 
-    const now = new Date();
-    const endTime = new Date(row.endTime.value);
-    if (now > endTime) {
-      errorMessage = t('questionnaire.votingClosedError');
+    if (new Date() > new Date(endTime)) {
+      errorMessageText = t('questionnaire.votingClosedError');
       return;
     }
 
-    errorMessage = "";
+    errorMessageText = "";
     isSubmitting = true;
 
     try {
-      const { record, votesValue } = await submitVote({
-        repositoryRecordId,
-        commentID: row.commentID.value,
+      const { poll: updated } = await votePoll({
+        appId,
+        recordId,
+        commentID,
         letter: selectedLetter,
-        loginUser,
-        repoAppId,
+        userCode: loginUser.code,
       });
-      localVotesValue = votesValue;
-      castVote = true;
-      onRepositoryUpdate(record);
+      votes = updated.votes;
+      hasVoted = true;
+      onPollChange(updated);
     } catch (error) {
       console.error("Failed to submit vote:", error);
-      errorMessage = t('questionnaire.voteSubmitError');
+      errorMessageText = error.code === 'poll_closed' || error.code === 'unauthorized'
+        ? errorMessage(error)
+        : t('questionnaire.voteSubmitError');
     } finally {
       isSubmitting = false;
     }
@@ -112,15 +84,15 @@
       <label class="questionnaire-option-row">
         <input
           type="radio"
-          name="vote-{row.commentID.value}"
+          name="vote-{commentID}"
           value={option.letter}
           bind:group={selectedLetter}
         />
         {option.label}
       </label>
     {/each}
-    {#if errorMessage}
-      <div class="questionnaire-error">{errorMessage}</div>
+    {#if errorMessageText}
+      <div class="questionnaire-error">{errorMessageText}</div>
     {/if}
     <button
       class="questionnaire-vote-button"

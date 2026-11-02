@@ -17,21 +17,22 @@ npm run pack
 npm run upload  # または手動でアップロード
 ```
 
-プラグイン設定画面で、アンケートデータを保存するリポジトリアプリ(新規作成ボタンあり)とその API トークンを設定します。
+プラグイン設定画面の「初期設定」に沿って、リポジトリアプリ・サーバー・APIトークンを設定します(下の「サーバー」を参照)。
 
 ## 構造
 
-- `src/js/desktop.js` — `app.record.detail.show` でリポジトリアプリのレコードを取得し、コメント欄に「アンケート」ボタンとアンケート(投票/結果)を差し込みます
+- `src/js/desktop.js` — `app.record.detail.show` でサーバーからそのレコードのアンケートを取得し、コメント欄に「アンケート」ボタンとアンケート(投票/結果)を差し込みます
 - `src/js/config.js` / `src/Config.svelte` — プラグイン設定画面
 - `src/components/` — アンケート作成フォーム、メンション入力、コメント欄のアンケート表示
-- `src/services/` — kintone API 呼び出しやリポジトリレコードの読み書き
+- `src/services/` — コメント投稿やサーバー(`iktkApi.js`)の呼び出し
+- `src/config/`、`src/components/config/` — 設定画面のロジックと部品
 - `src/locales/` — 翻訳(en、ja、es、zh-TW)。`src/i18n.js` の `t` をインポートして使用
 
 KUC コンポーネントはラッパーなしで直接使用します(`new Text()` などで作成し、Svelte の `{@attach}` で配置)。`Dialog` と `Notification` は `document.body` に追加されるため、使用したら `{@attach}` のクリーンアップで `.remove()` してください。
 
-### 締め切り通知
+### サーバー
 
-アンケート作成時に [IKTK-reminder](../IKTK-reminder)(AWS SAM)の `/schedule` エンドポイントへ締め切りを送信します。締め切り時刻になると EventBridge Scheduler が通知 Lambda を実行し、リポジトリアプリのレコードに結果をコメントします。
+アンケートの保存・投票の集計・結果の投稿は、ドメインごとのサーバー([IKTK-reminder](../IKTK-reminder))が行います。プラグイン設定の「初期設定」で、リポジトリアプリの作成、APIトークンの発行、サーバーの用意、このアプリのAPIトークンの登録を順に行います。リポジトリアプリは管理者と作成者しか開けず、ユーザーのブラウザーからは `kintone.plugin.app.proxy` 経由でのみサーバーにアクセスします。インストールから結果投稿までのすべてのリクエストは、英語版の「Requests, step by step」の表にまとめています(IKTK-reminder の README と同じ内容)。
 
 ---
 
@@ -52,18 +53,98 @@ npm run pack
 npm run upload  # or upload manually
 ```
 
-In the plugin settings, set the repository app that stores poll data (there's a button to create one) and an API token for it.
+In the plugin settings, follow Initial setup to create the repository app, provision the server, and add the API tokens (see Server below).
 
 ## Structure
 
-- `src/js/desktop.js` — on `app.record.detail.show`, loads the record's repository entry and injects the "Poll" button and the polls (vote/results) into the comments sidebar
+- `src/js/desktop.js` — on `app.record.detail.show`, loads the record's polls from the server and injects the "Poll" button and the polls (vote/results) into the comments sidebar
 - `src/js/config.js` / `src/Config.svelte` — plugin settings page
 - `src/components/` — poll creation form, mention picker, and the in-comment poll view
-- `src/services/` — kintone API calls and repository record reads/writes
+- `src/services/` — posting comments and calling the server (`iktkApi.js`)
+- `src/config/`, `src/components/config/` — settings page logic and pieces
 - `src/locales/` — translations (en, ja, es, zh-TW); import `t` from `src/i18n.js`
 
 KUC components are used directly, without wrappers: construct one with `new Text()` etc. and place it with a Svelte `{@attach}`. `Dialog` and `Notification` append themselves to `document.body`, so call `.remove()` on them in your `{@attach}` cleanup.
 
-### Deadline notifications
+### Server
 
-When a poll is created, the plugin sends its deadline to the `/schedule` endpoint of [IKTK-reminder](../IKTK-reminder) (AWS SAM). At the deadline, EventBridge Scheduler invokes the notify Lambda, which posts the results as a comment on the repository app record.
+Polls are stored, counted, and posted by a per-domain server ([IKTK-reminder](../IKTK-reminder)). Initial setup in the plugin settings walks through creating the repository app, its API token, provisioning the server, and this app's API token. The repository app is locked to administrators and its creator; users' browsers only reach the server through `kintone.plugin.app.proxy`, which adds the app's token from proxy config. `CONTROL_PLANE_HOST` in `src/config/constants.js` is the one hardcoded address. Every request the plugin and server make is listed below, and kept in sync with [IKTK-reminder's README](../IKTK-reminder/README.md#requests-step-by-step).
+
+### Requests, step by step
+
+Who calls what, from install to a poll's results. **From → to**:
+
+- **Browser → kintone**: the user's own session, so it runs with their permissions
+- **Browser → AWS**: `fetch` straight to the control plane
+- **Proxy → AWS**: `kintone.plugin.app.proxy`, where kintone's servers call the domain API and add the app's token from proxy config
+- **Lambda → kintone**: API-token calls to the customer's domain
+- **Lambda → AWS**: SSM, DynamoDB, CloudFormation, EventBridge Scheduler
+
+"Repo" is the repository app; "this app" is the app the plugin runs in.
+
+#### 1. Install and add to an app
+
+No requests: none of our code runs until someone opens the settings page.
+
+#### 2. Plugin settings page
+
+| When | From → to | Request | Then, on the server |
+|---|---|---|---|
+| Page load, app has no endpoint | Browser → AWS | `GET /domains/{domain}?proof=` (lookup) | DynamoDB get; `DescribeStacks` only if the endpoint wasn't saved yet |
+| Page load, provisioning ID saved | Browser → AWS | `GET /provisions/{id}`, every 5 s until done | 2 DynamoDB gets, `DescribeStacks` |
+| Create repository app | Browser → kintone | `preview/app.json`, `app/settings.json`, `app/form/fields.json`, `app/acl.json`, `app/deploy.json`, then `GET deploy.json` every 1 s | — |
+| Provision server | Browser → AWS | `POST /domains` | kintone `GET records.json` on repo (token check); SSM `PutParameter`; `DescribeStacks` + `CreateStack`; DynamoDB puts. The stack builds for a few minutes. |
+| Save | Browser → kintone | `GET records.json` on this app with the pasted token (token check) | — then `setProxyConfig`, `setConfig` |
+| Delete server | Browser → AWS | `DELETE /domains` | kintone token check on repo; `DeleteStack`; SSM `GetParametersByPath` + `DeleteParameters`; DynamoDB delete |
+
+#### 3. Opening a record
+
+| When | From → to | Request | Then, on the server |
+|---|---|---|---|
+| Record view, no announcement comment without results | — | **none** | — |
+| Record view, an announcement without its results comment (an open poll) | Proxy → AWS | `POST /polls/list`, once per announcement however often the comments redraw | kintone `GET records.json` on this app (token check, cached 5 min per warm Lambda); SSM repo token (cached 60 s); kintone `GET records.json` on **repo** |
+| "Allow non-admins" off | — | `kintone.app.getPermissions()` (JS API) | — |
+| Typing in the mention picker | Browser → kintone | `POST /k/api/directory/search.json`, **every keystroke**, kintone's internal (undocumented) endpoint | — |
+| Comment list redraws | — | none, unless a new open announcement appears (e.g. older comments loaded) | — |
+
+The plugin reads the visible comments first ([`src/services/pollComments.js`](src/services/pollComments.js)). Every poll has an announcement comment, and every ended poll a results comment whose first line ends with `(#<announcement id>)`. So most records, which have no poll, never call the server, and an ended poll's results comment shows its outcome without one. An ended poll gets no row of its own unless its results haven't been posted.
+
+#### 4. Creating a poll
+
+| # | From → to | Request |
+|---|---|---|
+| 1 | Browser → kintone | `POST record/comment.json` on this record, as the user; kintone notifies the mentioned users |
+| 2 | Proxy → AWS | `POST /polls/create` |
+| 2a | Lambda → kintone | token check on this app (if not cached) |
+| 2b | Lambda → kintone | `GET records.json` on repo: does this poll exist already? |
+| 2c | Lambda → kintone | `GET record/comments.json` on this record (newest 10), with this app's token: confirms the comment, its author and mentions |
+| 2d | Lambda → kintone | `GET records.json` on repo again (redundant: `addRow` looks it up a second time) |
+| 2e | Lambda → kintone | First poll on the record: `POST record.json`. Otherwise `GET record.json` + `PUT record.json` with its revision, retried (up to 3 times in all) if someone saved in between |
+| 2f | Lambda → AWS | SSM `PutParameter`: this app's token, for the results comment |
+| 2g | Lambda → AWS | Scheduler `CreateSchedule` at the deadline |
+
+#### 5. While a poll is open
+
+| When | From → to | Request | Then, on the server |
+|---|---|---|---|
+| Record view | Proxy → AWS | `POST /polls/list`, as in section 3 (the poll's results comment isn't there yet) | The server works out "voted" and "ended" |
+| Vote | Proxy → AWS | `POST /polls/vote` | token check (if not cached); kintone `GET records.json` on repo; `GET record.json` + `PUT record.json` with revision, retried on conflict |
+
+#### 6. When the poll ends
+
+| # | From → to | Request |
+|---|---|---|
+| 1 | AWS → Lambda | EventBridge Scheduler invokes the notify Lambda at the deadline; the schedule then deletes itself (2 retries on failure) |
+| 2 | Lambda → AWS | SSM: repo token (not cached here) |
+| 3 | Lambda → kintone | `GET records.json` on repo: final counts |
+| 4 | Lambda → AWS | SSM: this app's token |
+| 5 | Lambda → kintone | `POST record/comment.json` on the poll's record, with this app's token: posted as "Administrator", first line ending in `(#<announcement id>)` (see the server's `src/messages.mjs`); kintone notifies the mentioned users |
+
+Later record views: no request; the results comment is the poll's outcome. (Results comments posted before `(#id)` was added don't name their poll, so those records still make one `/polls/list` call and show the poll as ended.)
+
+#### kintone's limit of 10,000 API requests per app per day
+
+| App | Requests |
+|---|---|
+| **Repository app** (shared by every app in the domain) | 1 per view of a record with an open poll, about 4 per poll created, 3 per vote, 1 per poll ending. Views of records without an open poll cost nothing. |
+| Each app with the plugin | Token checks (at most one per 5 minutes per warm Lambda), 1 comment read per poll created, 1 results comment per poll, plus the user's own announcement comment |

@@ -12,7 +12,6 @@
     "upload": "node --env-file-if-exists=.env node_modules/.bin/cli-kintone plugin upload --input dist/plugin.zip"
   },
   "dependencies": {
-    "@kintone/rest-api-client": "^6.2.1",
     "i18next": "^26.4.2",
     "kintone-ui-component": "^1.26.0"
   },
