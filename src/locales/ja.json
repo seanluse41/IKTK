@@ -57,7 +57,19 @@
     "errorLabel": "エラー",
     "saveSuccess": "プラグインの設定を保存しました。アプリを更新してください！",
     "saveError": "設定を保存できませんでした: {{message}}",
-    "repositoryAppIdRequired": "リポジトリアプリのApp IDは必須です。"
+    "repositoryAppIdRequired": "リポジトリアプリのApp IDは必須です。",
+    "allowNamedVotesLabel": "記名式アンケート",
+    "allowNamedVotesItem": "誰がどれに投票したかを表示するアンケートの作成を許可する",
+    "allowNamedVotesHelp": "アンケートごとに作成者が選びます。匿名のアンケートは、開始コメントの先頭にその旨が表示されます。記名式のアンケートでは、レコードを閲覧できる人なら誰でも、誰がどれを選んだかを見られます(結果のコメントにも表示されます)。",
+    "allowVoteChangeLabel": "投票の変更",
+    "allowVoteChangeItem": "参加者による投票の変更を許可できるようにする",
+    "allowVoteChangeHelp": "アンケートごとに作成者が選びます。参加者は締め切りまで投票を変更できます。投票を変更できるよう、サーバーは匿名のアンケートでも各ユーザーの選択を記録します。匿名のアンケートで表示されることはありませんが、管理者はリポジトリアプリで確認できます。",
+    "allowAddOptionsLabel": "選択肢の追加",
+    "allowAddOptionsItem": "参加者による選択肢の追加を許可できるようにする",
+    "allowAddOptionsHelp": "アンケートごとに作成者が選びます。参加者は締め切りまで、合計10個まで選択肢を追加できます。選択肢が追加されても通知はされません。",
+    "allowRemindersLabel": "リマインド",
+    "allowRemindersItem": "リマインドの設定を許可する",
+    "allowRemindersHelp": "作成者が締め切りの1日前・6時間前・1時間前から選びます。リマインドは、投票済みかどうかにかかわらず、グループや組織を含むすべての参加者にメンションします。"
   },
   "form": {
     "titleLabel": "タイトル",
@@ -67,7 +79,16 @@
     "addOption": "＋ 選択肢を追加",
     "deadlineLabel": "締め切り",
     "mentionsLabel": "参加者",
-    "mentionsPlaceholder": "名前またはコードで検索"
+    "mentionsPlaceholder": "名前またはコードで検索",
+    "namedVotesItem": "誰がどれに投票したかを表示する(記名式)",
+    "voteChangeItem": "参加者による投票の変更を許可する",
+    "addOptionsItem": "参加者による選択肢の追加を許可する",
+    "reminderLabel": "リマインド",
+    "reminderNone": "リマインドしない",
+    "reminder1d": "締め切りの1日前",
+    "reminder6h": "締め切りの6時間前",
+    "reminder1h": "締め切りの1時間前",
+    "reminderHelp": "投票済みかどうかにかかわらず、すべての参加者にメンションします。締め切りがそれより早い場合は送られません。"
   },
   "questionnaire": {
     "badge": "アンケート",
@@ -76,7 +97,12 @@
     "votingButton": "送信中...",
     "votingClosedError": "このアンケートは終了しました",
     "voteSubmitError": "投票に失敗しました。もう一度お試しください",
-    "endedLine": "アンケート「{{title}}」が終了しました。(#{{id}})"
+    "endedLine": "アンケート「{{title}}」が終了しました。(#{{id}})",
+    "anonymousBadge": "匿名",
+    "changeVote": "投票を変更する",
+    "addOptionPlaceholder": "選択肢を提案",
+    "addOptionButton": "追加",
+    "addOptionError": "選択肢を追加できませんでした。もう一度お試しください"
   },
   "questionnaireButton": {
     "mentionButtonLabel": "アンケート",
@@ -85,7 +111,8 @@
     "createButton": "作成",
     "cancelButton": "キャンセル",
     "commentBody": "アンケートが開始されました: {{title}}\n回答期限: {{deadline}}",
-    "dateLocale": "ja-JP"
+    "dateLocale": "ja-JP",
+    "anonymousNote": "このアンケートは匿名です。"
   },
   "validation": {
     "titleRequired": "タイトルを入力してください",

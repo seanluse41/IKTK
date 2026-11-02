@@ -1,9 +1,11 @@
 <script>
-  import { Button, DateTimePicker, Text } from "kintone-ui-component";
+  import { Button, Checkbox, DateTimePicker, Dropdown, Text } from "kintone-ui-component";
   import MentionTextarea from "./mentionTextArea.svelte";
   import { t } from "../i18n.js";
 
-  let { appId, recordId } = $props();
+  // config: this app's plugin options; the choices below appear only when
+  // its admins allow them.
+  let { appId, recordId, config } = $props();
 
   const MAX_OPTIONS = 5;
 
@@ -35,12 +37,43 @@
 
   let mentions = $state([]);
 
+  const namedVotesField = new Checkbox({
+    items: [{ label: t("form.namedVotesItem"), value: "on" }],
+  });
+
+  const voteChangeField = new Checkbox({
+    items: [{ label: t("form.voteChangeItem"), value: "on" }],
+  });
+
+  const addOptionsField = new Checkbox({
+    items: [{ label: t("form.addOptionsItem"), value: "on" }],
+  });
+
+  const reminderField = new Dropdown({
+    label: t("form.reminderLabel"),
+    items: [
+      { label: t("form.reminderNone"), value: "" },
+      { label: t("form.reminder1d"), value: "1d" },
+      { label: t("form.reminder6h"), value: "6h" },
+      { label: t("form.reminder1h"), value: "1h" },
+    ],
+    value: "",
+  });
+
+  const isOn = (field) => (field.value ?? []).length > 0;
+
   export function getFormData() {
     return {
       title: titleField.value ?? "",
       options: optionFields.map((field) => field.value ?? ""),
       deadline: deadlineField.value ?? "",
       mentions: mentions.map(({ code, type }) => ({ code, type })),
+      settings: {
+        anonymous: !(config.allowNamedVotes && isOn(namedVotesField)),
+        allowVoteChange: config.allowVoteChange && isOn(voteChangeField),
+        allowAddOptions: config.allowAddOptions && isOn(addOptionsField),
+        reminder: config.allowReminders ? (reminderField.value ?? "") : "",
+      },
     };
   }
 
@@ -65,4 +98,19 @@
   <div {@attach place(deadlineField)}></div>
 
   <MentionTextarea {appId} {recordId} bind:mentions />
+
+  {#if config.allowNamedVotes || config.allowVoteChange || config.allowAddOptions}
+    <div>
+      {#if config.allowNamedVotes}<div {@attach place(namedVotesField)}></div>{/if}
+      {#if config.allowVoteChange}<div {@attach place(voteChangeField)}></div>{/if}
+      {#if config.allowAddOptions}<div {@attach place(addOptionsField)}></div>{/if}
+    </div>
+  {/if}
+
+  {#if config.allowReminders}
+    <div>
+      <div {@attach place(reminderField)}></div>
+      <div style="font-size:12px; color:#6b7775; margin-top:4px;">{t("form.reminderHelp")}</div>
+    </div>
+  {/if}
 </div>

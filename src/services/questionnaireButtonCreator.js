@@ -1,5 +1,6 @@
 import { mount, unmount } from 'svelte';
 import Form from '../components/form.svelte';
+import { getConfig } from '../config/pluginConfig.js';
 import { postComment } from './commentPoster.js';
 import { createPoll, errorMessage } from './iktkApi.js';
 import { validateFormData } from './validateFormData.js';
@@ -78,7 +79,7 @@ export function createQuestionnaireButton({ appId, recordId, onPollChange }) {
     }
 
     const body = document.createElement('div');
-    const form = mount(Form, { target: body, props: { appId, recordId } });
+    const form = mount(Form, { target: body, props: { appId, recordId, config: getConfig() } });
 
     const dialog = await kintone.createDialog({
       title: t('questionnaireButton.dialogTitle'),
@@ -108,10 +109,14 @@ export function createQuestionnaireButton({ appId, recordId, onPollChange }) {
             app: appId,
             record: recordId,
             comment: {
-              text: t('questionnaireButton.commentBody', {
-                title: formData.title,
-                deadline: formatDeadline(formData.deadline),
-              }),
+              // An anonymous poll says so up top; a named one says nothing.
+              text: [
+                ...(formData.settings.anonymous ? [t('questionnaireButton.anonymousNote')] : []),
+                t('questionnaireButton.commentBody', {
+                  title: formData.title,
+                  deadline: formatDeadline(formData.deadline),
+                }),
+              ].join('\n'),
               mentions: formData.mentions,
             },
           });
@@ -134,6 +139,7 @@ export function createQuestionnaireButton({ appId, recordId, onPollChange }) {
             // browser knows the offset, so convert here and send UTC.
             deadline: new Date(formData.deadline).toISOString(),
             language: loginUser.language,
+            settings: formData.settings,
           });
           onPollChange(poll);
         } catch (error) {

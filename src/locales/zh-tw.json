@@ -57,7 +57,19 @@
     "errorLabel": "錯誤",
     "saveSuccess": "已儲存外掛程式設定。請更新應用程式！",
     "saveError": "無法儲存設定：{{message}}",
-    "repositoryAppIdRequired": "儲存庫應用程式的 App ID 為必填。"
+    "repositoryAppIdRequired": "儲存庫應用程式的 App ID 為必填。",
+    "allowNamedVotesLabel": "記名問卷",
+    "allowNamedVotesItem": "允許建立者顯示誰投了哪個選項",
+    "allowNamedVotesHelp": "由建立者為每個問卷選擇。匿名問卷會在公告留言開頭註明。記名問卷中，能檢視記錄的人都能看到誰選了什麼，結果留言中也會列出。",
+    "allowVoteChangeLabel": "變更投票",
+    "allowVoteChangeItem": "允許建立者讓參與者變更投票",
+    "allowVoteChangeHelp": "由建立者為每個問卷選擇。參與者可在截止前變更投票。為了移動投票，伺服器會記錄每個人的選擇，匿名問卷也一樣。匿名問卷不會顯示，但管理者可以在儲存庫應用程式中看到。",
+    "allowAddOptionsLabel": "新增選項",
+    "allowAddOptionsItem": "允許建立者讓參與者新增選項",
+    "allowAddOptionsHelp": "由建立者為每個問卷選擇。參與者可在截止前新增選項，最多共 10 個。新增選項時不會通知任何人。",
+    "allowRemindersLabel": "提醒",
+    "allowRemindersItem": "允許建立者設定提醒",
+    "allowRemindersHelp": "建立者可選擇截止前 1 天、6 小時或 1 小時。提醒會提及所有參與者（包括群組與組織），無論是否已投票。"
   },
   "form": {
     "titleLabel": "標題",
@@ -67,7 +79,16 @@
     "addOption": "＋ 新增選項",
     "deadlineLabel": "截止時間",
     "mentionsLabel": "參與者",
-    "mentionsPlaceholder": "以名稱或代碼搜尋"
+    "mentionsPlaceholder": "以名稱或代碼搜尋",
+    "namedVotesItem": "顯示誰投了哪個選項（記名）",
+    "voteChangeItem": "允許參與者變更投票",
+    "addOptionsItem": "允許參與者新增選項",
+    "reminderLabel": "提醒",
+    "reminderNone": "不提醒",
+    "reminder1d": "截止前 1 天",
+    "reminder6h": "截止前 6 小時",
+    "reminder1h": "截止前 1 小時",
+    "reminderHelp": "提及所有參與者，無論是否已投票。若截止時間更早則不會發送。"
   },
   "questionnaire": {
     "badge": "問卷",
@@ -76,7 +97,12 @@
     "votingButton": "送出中...",
     "votingClosedError": "此問卷已結束",
     "voteSubmitError": "投票失敗，請再試一次",
-    "endedLine": "問卷「{{title}}」已結束。(#{{id}})"
+    "endedLine": "問卷「{{title}}」已結束。(#{{id}})",
+    "anonymousBadge": "匿名",
+    "changeVote": "變更投票",
+    "addOptionPlaceholder": "提議選項",
+    "addOptionButton": "新增",
+    "addOptionError": "無法新增選項，請再試一次"
   },
   "questionnaireButton": {
     "mentionButtonLabel": "問卷",
@@ -85,7 +111,8 @@
     "createButton": "建立",
     "cancelButton": "取消",
     "commentBody": "問卷已開始：{{title}}\n截止時間：{{deadline}}",
-    "dateLocale": "zh-TW"
+    "dateLocale": "zh-TW",
+    "anonymousNote": "此問卷為匿名。"
   },
   "validation": {
     "titleRequired": "請輸入標題",

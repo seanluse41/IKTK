@@ -57,7 +57,19 @@
     "errorLabel": "Error",
     "saveSuccess": "The plug-in settings have been saved. Please update the app!",
     "saveError": "Couldn't save the settings: {{message}}",
-    "repositoryAppIdRequired": "Repository App ID is required."
+    "repositoryAppIdRequired": "Repository App ID is required.",
+    "allowNamedVotesLabel": "Named polls",
+    "allowNamedVotesItem": "Let poll creators show who voted for what",
+    "allowNamedVotesHelp": "The creator chooses for each poll. Anonymous polls say so at the top of their announcement. On named polls, everyone who can see the record can see who chose what, including in the results comment.",
+    "allowVoteChangeLabel": "Changing votes",
+    "allowVoteChangeItem": "Let poll creators allow voters to change their vote",
+    "allowVoteChangeHelp": "The creator chooses for each poll. Voters can change their vote until the poll closes. To move a vote, the server remembers each person's choice, even on anonymous polls. Anonymous polls still never show it, but administrators could see it in the repository app.",
+    "allowAddOptionsLabel": "Adding options",
+    "allowAddOptionsItem": "Let poll creators allow participants to add options",
+    "allowAddOptionsHelp": "The creator chooses for each poll. Participants can add options until the poll closes, up to 10 in all. No one is notified when an option is added.",
+    "allowRemindersLabel": "Reminders",
+    "allowRemindersItem": "Let poll creators schedule a reminder",
+    "allowRemindersHelp": "The creator picks 1 day, 6 hours, or 1 hour before the deadline. The reminder mentions everyone in the poll, groups and departments included, whether or not they've voted."
   },
   "form": {
     "titleLabel": "Title",
@@ -67,7 +79,16 @@
     "addOption": "+ Add option",
     "deadlineLabel": "Deadline",
     "mentionsLabel": "Participants",
-    "mentionsPlaceholder": "Search by name or code"
+    "mentionsPlaceholder": "Search by name or code",
+    "namedVotesItem": "Show who voted for what (not anonymous)",
+    "voteChangeItem": "Let voters change their vote",
+    "addOptionsItem": "Let participants add options",
+    "reminderLabel": "Reminder",
+    "reminderNone": "No reminder",
+    "reminder1d": "1 day before the deadline",
+    "reminder6h": "6 hours before the deadline",
+    "reminder1h": "1 hour before the deadline",
+    "reminderHelp": "Mentions everyone in the poll, whether or not they've voted. Skipped if the deadline is sooner."
   },
   "questionnaire": {
     "badge": "Poll",
@@ -77,7 +98,12 @@
     "votingButton": "Submitting...",
     "votingClosedError": "This poll has closed",
     "voteSubmitError": "Failed to submit your vote. Please try again",
-    "endedLine": "The poll \"{{title}}\" has ended. (#{{id}})"
+    "endedLine": "The poll \"{{title}}\" has ended. (#{{id}})",
+    "anonymousBadge": "Anonymous",
+    "changeVote": "Change vote",
+    "addOptionPlaceholder": "Suggest an option",
+    "addOptionButton": "Add",
+    "addOptionError": "Couldn't add the option. Please try again."
   },
   "questionnaireButton": {
     "mentionButtonLabel": "Poll",
@@ -86,7 +112,8 @@
     "createButton": "Create",
     "cancelButton": "Cancel",
     "commentBody": "A poll has started: {{title}}\nDeadline: {{deadline}}",
-    "dateLocale": "en-US"
+    "dateLocale": "en-US",
+    "anonymousNote": "This poll is anonymous."
   },
   "validation": {
     "titleRequired": "Please enter a title",

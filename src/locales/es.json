@@ -57,7 +57,19 @@
     "errorLabel": "Error",
     "saveSuccess": "Se guardó la configuración del plug-in. ¡Actualiza la aplicación!",
     "saveError": "No se pudo guardar la configuración: {{message}}",
-    "repositoryAppIdRequired": "El App ID de la aplicación repositorio es obligatorio."
+    "repositoryAppIdRequired": "El App ID de la aplicación repositorio es obligatorio.",
+    "allowNamedVotesLabel": "Encuestas nominales",
+    "allowNamedVotesItem": "Permitir a los creadores mostrar quién votó qué",
+    "allowNamedVotesHelp": "El creador lo elige en cada encuesta. Las encuestas anónimas lo indican al principio de su anuncio. En las nominales, cualquiera que pueda ver el registro ve quién eligió qué, también en el comentario de resultados.",
+    "allowVoteChangeLabel": "Cambiar el voto",
+    "allowVoteChangeItem": "Permitir a los creadores dejar que se cambie el voto",
+    "allowVoteChangeHelp": "El creador lo elige en cada encuesta. Los participantes pueden cambiar su voto hasta que cierre. Para mover un voto, el servidor recuerda la elección de cada persona, también en las encuestas anónimas. Las anónimas nunca la muestran, pero los administradores podrían verla en la aplicación repositorio.",
+    "allowAddOptionsLabel": "Añadir opciones",
+    "allowAddOptionsItem": "Permitir a los creadores dejar que los participantes añadan opciones",
+    "allowAddOptionsHelp": "El creador lo elige en cada encuesta. Los participantes pueden añadir opciones hasta que cierre, hasta 10 en total. No se avisa a nadie cuando se añade una opción.",
+    "allowRemindersLabel": "Recordatorios",
+    "allowRemindersItem": "Permitir a los creadores programar un recordatorio",
+    "allowRemindersHelp": "El creador elige 1 día, 6 horas o 1 hora antes de la fecha límite. El recordatorio menciona a todos los participantes, grupos y departamentos incluidos, hayan votado o no."
   },
   "form": {
     "titleLabel": "Título",
@@ -67,7 +79,16 @@
     "addOption": "+ Añadir opción",
     "deadlineLabel": "Fecha límite",
     "mentionsLabel": "Participantes",
-    "mentionsPlaceholder": "Buscar por nombre o código"
+    "mentionsPlaceholder": "Buscar por nombre o código",
+    "namedVotesItem": "Mostrar quién votó qué (no anónima)",
+    "voteChangeItem": "Permitir que los participantes cambien su voto",
+    "addOptionsItem": "Permitir que los participantes añadan opciones",
+    "reminderLabel": "Recordatorio",
+    "reminderNone": "Sin recordatorio",
+    "reminder1d": "1 día antes de la fecha límite",
+    "reminder6h": "6 horas antes de la fecha límite",
+    "reminder1h": "1 hora antes de la fecha límite",
+    "reminderHelp": "Menciona a todos los participantes, hayan votado o no. No se envía si la fecha límite es antes."
   },
   "questionnaire": {
     "badge": "Encuesta",
@@ -77,7 +98,12 @@
     "votingButton": "Enviando...",
     "votingClosedError": "Esta encuesta ha finalizado",
     "voteSubmitError": "No se pudo enviar tu voto. Inténtalo de nuevo",
-    "endedLine": "La encuesta «{{title}}» ha finalizado. (#{{id}})"
+    "endedLine": "La encuesta «{{title}}» ha finalizado. (#{{id}})",
+    "anonymousBadge": "Anónima",
+    "changeVote": "Cambiar voto",
+    "addOptionPlaceholder": "Sugerir una opción",
+    "addOptionButton": "Añadir",
+    "addOptionError": "No se pudo añadir la opción. Inténtalo de nuevo"
   },
   "questionnaireButton": {
     "mentionButtonLabel": "Encuesta",
@@ -86,7 +112,8 @@
     "createButton": "Crear",
     "cancelButton": "Cancelar",
     "commentBody": "Se ha iniciado una encuesta: {{title}}\nFecha límite: {{deadline}}",
-    "dateLocale": "es-ES"
+    "dateLocale": "es-ES",
+    "anonymousNote": "Esta encuesta es anónima."
   },
   "validation": {
     "titleRequired": "Introduce un título",

@@ -107,7 +107,7 @@ No requests: none of our code runs until someone opens the settings page.
 | Typing in the mention picker | Browser → kintone | `POST /k/api/directory/search.json`, **every keystroke**, kintone's internal (undocumented) endpoint | — |
 | Comment list redraws | — | none, unless a new open announcement appears (e.g. older comments loaded) | — |
 
-The plugin reads the visible comments first ([`src/services/pollComments.js`](src/services/pollComments.js)). Every poll has an announcement comment, and every ended poll a results comment whose first line ends with `(#<announcement id>)`. So most records, which have no poll, never call the server, and an ended poll's results comment shows its outcome without one. An ended poll gets no row of its own unless its results haven't been posted.
+The plugin reads the visible comments first ([`src/services/pollComments.js`](src/services/pollComments.js)). Every poll has an announcement comment, and every ended poll a results comment whose first line ends with `(#<announcement id>)` and lists every count (and, for named polls, who chose what). So most records, which have no poll, never call the server, and an ended poll's graph, names included, is drawn from its results comment without one.
 
 #### 4. Creating a poll
 
@@ -122,13 +122,15 @@ The plugin reads the visible comments first ([`src/services/pollComments.js`](sr
 | 2e | Lambda → kintone | First poll on the record: `POST record.json`. Otherwise `GET record.json` + `PUT record.json` with its revision, retried (up to 3 times in all) if someone saved in between |
 | 2f | Lambda → AWS | SSM `PutParameter`: this app's token, for the results comment |
 | 2g | Lambda → AWS | Scheduler `CreateSchedule` at the deadline |
+| 2h | Lambda → AWS | Scheduler `CreateSchedule` for the reminder, if one was picked |
 
 #### 5. While a poll is open
 
 | When | From → to | Request | Then, on the server |
 |---|---|---|---|
 | Record view | Proxy → AWS | `POST /polls/list`, as in section 3 (the poll's results comment isn't there yet) | The server works out "voted" and "ended" |
-| Vote | Proxy → AWS | `POST /polls/vote` | token check (if not cached); kintone `GET records.json` on repo; `GET record.json` + `PUT record.json` with revision, retried on conflict |
+| Vote, or change a vote | Proxy → AWS | `POST /polls/vote` | token check (if not cached); kintone `GET records.json` on repo; `GET record.json` + `PUT record.json` with revision, retried on conflict |
+| Add an option | Proxy → AWS | `POST /polls/add-option` | the same as a vote |
 
 #### 6. When the poll ends
 
@@ -138,13 +140,15 @@ The plugin reads the visible comments first ([`src/services/pollComments.js`](sr
 | 2 | Lambda → AWS | SSM: repo token (not cached here) |
 | 3 | Lambda → kintone | `GET records.json` on repo: final counts |
 | 4 | Lambda → AWS | SSM: this app's token |
-| 5 | Lambda → kintone | `POST record/comment.json` on the poll's record, with this app's token: posted as "Administrator", first line ending in `(#<announcement id>)` (see the server's `src/messages.mjs`); kintone notifies the mentioned users |
+| 5 | Lambda → kintone | `POST record/comment.json` on the poll's record, with this app's token: posted as "Administrator", first line ending in `(#<announcement id>)`; kintone notifies the mentioned users |
 
-Later record views: no request; the results comment is the poll's outcome. (Results comments posted before `(#id)` was added don't name their poll, so those records still make one `/polls/list` call and show the poll as ended.)
+A reminder, if one was picked, runs steps 1–5 the same way at its own time, posting the reminder comment instead of the results.
+
+Later record views: no request; the poll's graph is drawn from its results comment. (Results comments posted before `(#id)` was added don't name their poll, so those records still make one `/polls/list` call and show the poll as ended.)
 
 #### kintone's limit of 10,000 API requests per app per day
 
 | App | Requests |
 |---|---|
-| **Repository app** (shared by every app in the domain) | 1 per view of a record with an open poll, about 4 per poll created, 3 per vote, 1 per poll ending. Views of records without an open poll cost nothing. |
-| Each app with the plugin | Token checks (at most one per 5 minutes per warm Lambda), 1 comment read per poll created, 1 results comment per poll, plus the user's own announcement comment |
+| **Repository app** (shared by every app in the domain) | 1 per view of a record with an open poll, about 4 per poll created, 3 per vote or added option, 1 per poll ending, 1 per reminder. Views of records without an open poll cost nothing. |
+| Each app with the plugin | Token checks (at most one per 5 minutes per warm Lambda), 1 comment read per poll created, 1 results comment per poll, 1 reminder comment if picked, plus the user's own announcement comment |

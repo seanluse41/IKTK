@@ -1,4 +1,4 @@
-import { getAppToken, getConfig, setConfig } from './pluginConfig.js';
+import { OPTIONS, getAppToken, getConfig, setConfig } from './pluginConfig.js';
 import { lookupDomain, provisionStatus } from './controlPlane.js';
 import { t } from '../i18n.js';
 
@@ -11,7 +11,7 @@ export const settings = $state({
   endpoint: config.endpoint,
   // Set while this domain's server is still being created.
   provisionId: config.provisionId,
-  allowNonAdminPoll: config.allowNonAdminPoll,
+  ...Object.fromEntries(OPTIONS.map((option) => [option, config[option]])),
   appToken: getAppToken(config.endpoint),
 });
 
@@ -62,7 +62,7 @@ export const saveConfig = () =>
     repoAppId: settings.repoAppId.trim(),
     endpoint: settings.endpoint,
     provisionId: settings.provisionId,
-    allowNonAdminPoll: settings.allowNonAdminPoll,
+    ...Object.fromEntries(OPTIONS.map((option) => [option, settings[option]])),
   });
 
 // '' | 'pending' | 'failed', with the control plane's message on failure.

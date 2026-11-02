@@ -40,10 +40,9 @@ kintone.events.on('app.record.detail.show', async () => {
 
   // The server is only asked when a visible announcement has no results
   // comment yet: most records have no poll at all, and an ended poll's
-  // results comment already shows its outcome. So an ended poll gets no row
-  // of its own, unless its results haven't been posted.
+  // results comment holds everything its graph needs.
   const update = async () => {
-    const { announced, ended } = scanPollComments();
+    const { announced, anonymous, ended } = scanPollComments();
     const unasked = [...announced].filter((id) => !ended.has(id) && !asked.has(id));
 
     if (unasked.length > 0 && !loading) {
@@ -60,8 +59,15 @@ kintone.events.on('app.record.detail.show', async () => {
       }
     }
 
+    const endedPolls = [...ended].map(([commentID, results]) => ({
+      ...results,
+      commentID,
+      anonymous: anonymous.has(commentID),
+      isEnded: true,
+    }));
+
     insertQuestionnaires(
-      polls.filter((poll) => !ended.has(poll.commentID)),
+      [...polls.filter((poll) => !ended.has(poll.commentID)), ...endedPolls],
       { appId, recordId, loginUser, onPollChange }
     );
   };

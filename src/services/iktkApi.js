@@ -56,12 +56,16 @@ export const listPolls = ({ appId, recordId, userCode }) =>
   call('/polls/list', { appId, recordId, userCode });
 
 /** Records a poll whose announcement comment was just posted. { poll } */
-export const createPoll = ({ appId, recordId, commentID, title, options, deadline, language }) =>
-  call('/polls/create', { appId, recordId, commentID, title, options, deadline, language });
+export const createPoll = ({ appId, recordId, commentID, title, options, deadline, language, settings }) =>
+  call('/polls/create', { appId, recordId, commentID, title, options, deadline, language, settings });
 
 /** { poll } with the updated counts. */
-export const votePoll = ({ appId, recordId, commentID, letter, userCode }) =>
-  call('/polls/vote', { appId, recordId, commentID, letter, userCode });
+export const votePoll = ({ appId, recordId, commentID, letter, userCode, userName }) =>
+  call('/polls/vote', { appId, recordId, commentID, letter, userCode, userName });
+
+/** Adds a participant's option to a poll that allows it. { poll } */
+export const addPollOption = ({ appId, recordId, commentID, label, userCode }) =>
+  call('/polls/add-option', { appId, recordId, commentID, label, userCode });
 
 /** A message for users. Setup problems point them at the app's admins. */
 export const errorMessage = (error) => {

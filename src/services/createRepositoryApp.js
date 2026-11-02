@@ -43,6 +43,10 @@ const REPOSITORY_FIELDS = {
       creator: { type: 'USER_SELECT', code: 'creator', label: 'Creator', noLabel: false, required: true },
       votedUsers: { type: 'USER_SELECT', code: 'votedUsers', label: 'Voted Users', noLabel: false, required: false },
       options: { type: 'MULTI_LINE_TEXT', code: 'options', label: 'Options', noLabel: false, required: true },
+      // JSON, written by the server: what the creator chose, and who chose
+      // what when a poll keeps ballots (see iktk-server's src/polls.mjs).
+      settings: { type: 'MULTI_LINE_TEXT', code: 'settings', label: 'Settings', noLabel: false, required: false },
+      ballots: { type: 'MULTI_LINE_TEXT', code: 'ballots', label: 'Ballots', noLabel: false, required: false },
     },
   },
 };
