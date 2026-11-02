@@ -34,20 +34,29 @@
   },
   "questionnaire": {
     "badge": "Poll",
-    "votesCount": "{{count}} vote ({{percent}}%)",
-    "votesCount_plural": "{{count}} votes ({{percent}}%)",
+    "votesCount_one": "{{count}} vote ({{percent}}%)",
+    "votesCount_other": "{{count}} votes ({{percent}}%)",
     "voteButton": "Vote",
     "votingButton": "Submitting...",
     "votingClosedError": "This poll has closed",
     "voteSubmitError": "Failed to submit your vote. Please try again"
   },
   "questionnaireButton": {
-    "mentionButtonLabel": "アンケート",
-    "mentionButtonTitle": "アンケートを作成する",
-    "dialogTitle": "アンケートを作成",
-    "createButton": "作成",
-    "cancelButton": "キャンセル",
-    "commentBody": "アンケートが開始されました: {{title}}\n回答期限: {{deadline}}",
-    "dateLocale": "ja-JP"
+    "mentionButtonLabel": "Poll",
+    "mentionButtonTitle": "Create a poll",
+    "dialogTitle": "Create a poll",
+    "createButton": "Create",
+    "cancelButton": "Cancel",
+    "commentBody": "A poll has started: {{title}}\nDeadline: {{deadline}}",
+    "dateLocale": "en-US"
+  },
+  "validation": {
+    "titleRequired": "Please enter a title",
+    "optionsMinimum": "Please enter at least two options",
+    "deadlineRequired": "Please enter a deadline",
+    "deadlineInPast": "The deadline must be in the future"
+  },
+  "common": {
+    "remove": "Remove"
   }
 }

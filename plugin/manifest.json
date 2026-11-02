@@ -35,13 +35,5 @@
   "homepage_url": {
     "en": "https://kintone.dev",
     "ja": "https://cybozu.dev"
-  },
-  "mobile": {
-    "js": [
-      "js/mobile.js"
-    ],
-    "css": [
-      "css/mobile.css"
-    ]
   }
 }

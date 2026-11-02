@@ -1,23 +1,29 @@
 {
-  "name": "kintone-plugin-template",
+  "name": "iktk",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "build:config": "vite build --config vite.config.js --mode config",
     "build:desktop": "vite build --config vite.config.js --mode desktop",
-    "build:mobile": "vite build --config vite.config.js --mode mobile",
     "copy:manifest": "cp manifest.json plugin/manifest.json",
-    "build": "npm run build:config && npm run build:desktop && npm run build:mobile && npm run copy:manifest",
-    "pack": "cli-kintone plugin pack --input ./plugin/manifest.json --output ./dist/plugin.zip --private-key ./private.ppk"
+    "build": "npm run build:config && npm run build:desktop && npm run copy:manifest",
+    "keygen": "cli-kintone plugin keygen --output private.ppk",
+    "pack": "cli-kintone plugin pack --input plugin/manifest.json --output dist/plugin.zip --private-key private.ppk",
+    "upload": "node --env-file-if-exists=.env node_modules/.bin/cli-kintone plugin upload --input dist/plugin.zip"
   },
   "dependencies": {
-    "@kintone/rest-api-client": "^6.2.0",
-    "i18next": "^26.3.1",
-    "kintone-ui-component": "^1.25.0"
+    "@kintone/rest-api-client": "^6.2.1",
+    "i18next": "^26.4.2",
+    "kintone-ui-component": "^1.26.0"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.1.2",
-    "svelte": "^5.56.3",
-    "vite": "^8.0.16"
+    "@kintone/cli": "^1.21.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "svelte": "^5.57.0",
+    "vite": "^8.2.2"
+  },
+  "allowScripts": {
+    "core-js@3.50.0": true,
+    "fsevents@2.3.3": true
   }
 }

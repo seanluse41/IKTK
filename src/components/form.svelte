@@ -1,76 +1,68 @@
 <script>
-  import Text from "../builders/desktop/text.svelte";
-  import DateTimePicker from "../builders/desktop/datetimepicker.svelte";
+  import { Button, DateTimePicker, Text } from "kintone-ui-component";
   import MentionTextarea from "./mentionTextArea.svelte";
-  import { t } from "../t.js";
+  import { t } from "../i18n.js";
 
   let { appId, recordId } = $props();
 
   const MAX_OPTIONS = 5;
 
-  let title = $state("");
-  let options = $state(["", ""]);
-  let deadline = $state("");
+  // KUC components keep their own value, so we read them back in
+  // getFormData() instead of mirroring every change into $state.
+  const titleField = new Text({
+    label: t("form.titleLabel"),
+    placeholder: t("form.titlePlaceholder"),
+    requiredIcon: true,
+  });
+
+  const newOptionField = (number) =>
+    new Text({ placeholder: t("form.optionPlaceholder", { number }) });
+
+  let optionFields = $state.raw([newOptionField(1), newOptionField(2)]);
+
+  const addOptionButton = new Button({ text: t("form.addOption"), type: "normal" });
+
+  addOptionButton.addEventListener("click", () => {
+    if (optionFields.length >= MAX_OPTIONS) return;
+    optionFields = [...optionFields, newOptionField(optionFields.length + 1)];
+    addOptionButton.visible = optionFields.length < MAX_OPTIONS;
+  });
+
+  const deadlineField = new DateTimePicker({
+    label: t("form.deadlineLabel"),
+    requiredIcon: true,
+  });
+
   let mentions = $state([]);
-
-  function addOption() {
-    if (options.length >= MAX_OPTIONS) return;
-    options = [...options, ""];
-  }
-
-  function updateOption(index, value) {
-    options = options.map((o, i) => (i === index ? value : o));
-  }
 
   export function getFormData() {
     return {
-      title,
-      options,
-      deadline,
+      title: titleField.value ?? "",
+      options: optionFields.map((field) => field.value ?? ""),
+      deadline: deadlineField.value ?? "",
       mentions: mentions.map(({ code, type }) => ({ code, type })),
     };
   }
+
+  const place = (element) => (node) => {
+    node.appendChild(element);
+  };
 </script>
 
 <div
   style="display:flex; flex-direction:column; gap:16px; min-width:400px; padding:24px;"
 >
-  <Text
-    label={t('form.titleLabel')}
-    value={title}
-    placeholder={t('form.titlePlaceholder')}
-    requiredIcon={true}
-    onchange={(e) => (title = e.detail.value)}
-  />
+  <div {@attach place(titleField)}></div>
 
   <div>
-    <div style="font-size:14px; margin-bottom:8px;">{t('form.optionsLabel')}</div>
-    {#each options as option, i}
-      <div style="margin-bottom:8px;">
-        <Text
-          value={option}
-          placeholder={t('form.optionPlaceholder', { number: i + 1 })}
-          onchange={(e) => updateOption(i, e.detail.value)}
-        />
-      </div>
+    <div style="font-size:14px; margin-bottom:8px;">{t("form.optionsLabel")}</div>
+    {#each optionFields as field (field)}
+      <div style="margin-bottom:8px;" {@attach place(field)}></div>
     {/each}
-    {#if options.length < MAX_OPTIONS}
-      <button onclick={addOption} style="cursor:pointer;"
-        >{t('form.addOption')}</button
-      >
-    {/if}
+    <div {@attach place(addOptionButton)}></div>
   </div>
 
-  <DateTimePicker
-    label={t('form.deadlineLabel')}
-    requiredIcon={true}
-    onchange={(e) => {
-      console.log("DateTimePicker onchange detail:", e.detail);
-      console.log("DateTimePicker value:", e.detail.value);
-      console.log("typeof value:", typeof e.detail.value);
-      deadline = e.detail.value;
-    }}
-  />
+  <div {@attach place(deadlineField)}></div>
 
   <MentionTextarea {appId} {recordId} bind:mentions />
 </div>

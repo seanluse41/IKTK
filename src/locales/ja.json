@@ -48,5 +48,14 @@
     "cancelButton": "キャンセル",
     "commentBody": "アンケートが開始されました: {{title}}\n回答期限: {{deadline}}",
     "dateLocale": "ja-JP"
+  },
+  "validation": {
+    "titleRequired": "タイトルを入力してください",
+    "optionsMinimum": "選択肢を2つ以上入力してください",
+    "deadlineRequired": "締め切りを入力してください",
+    "deadlineInPast": "締め切りは未来の日時を指定してください"
+  },
+  "common": {
+    "remove": "削除"
   }
 }

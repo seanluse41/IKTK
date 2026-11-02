@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import { searchDirectory } from "../services/directorySearch.js";
-  import { t } from "../t.js";
+  import { t } from "../i18n.js";
 
   let { appId, recordId, mentions = $bindable([]) } = $props();
 

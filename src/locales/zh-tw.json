@@ -48,5 +48,14 @@
     "cancelButton": "取消",
     "commentBody": "問卷已開始：{{title}}\n截止時間：{{deadline}}",
     "dateLocale": "zh-TW"
+  },
+  "validation": {
+    "titleRequired": "請輸入標題",
+    "optionsMinimum": "請輸入至少兩個選項",
+    "deadlineRequired": "請輸入截止時間",
+    "deadlineInPast": "截止時間必須是未來的日期時間"
+  },
+  "common": {
+    "remove": "移除"
   }
 }

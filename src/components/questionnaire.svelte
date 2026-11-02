@@ -1,16 +1,17 @@
 <!-- src/components/questionnaire.svelte -->
 <script>
   import { submitVote } from "../services/submitVote.js";
-  import { t } from "../t.js";
+  import { t } from "../i18n.js";
 
   let {
     row,
     isCreator,
     hasVoted: hasVotedInitial,
     isEnded,
-    repositoryRecord,
+    repositoryRecordId,
     loginUser,
     repoAppId,
+    onRepositoryUpdate,
   } = $props();
 
   let castVote = $state(false);
@@ -66,15 +67,16 @@
     isSubmitting = true;
 
     try {
-      const updatedVotesValue = await submitVote({
-        repositoryRecord,
-        row,
+      const { record, votesValue } = await submitVote({
+        repositoryRecordId,
+        commentID: row.commentID.value,
         letter: selectedLetter,
         loginUser,
         repoAppId,
       });
-      localVotesValue = updatedVotesValue;
+      localVotesValue = votesValue;
       castVote = true;
+      onRepositoryUpdate(record);
     } catch (error) {
       console.error("Failed to submit vote:", error);
       errorMessage = t('questionnaire.voteSubmitError');

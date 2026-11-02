@@ -1,12 +1,11 @@
-import { mount } from 'svelte';
+import { mount, unmount } from 'svelte';
 import Form from '../components/form.svelte';
 import { postComment } from './commentPoster.js';
-import { createRepositoryRecord } from './createRepositoryRecord.js';
 import { addQuestionnaireRow } from './updateRepositoryRecord.js';
 import { buildQuestionnaireRow } from './buildQuestionnaireRow.js';
 import { scheduleQuestionnaireEnd } from './scheduleQuestionnaireEnd.js';
 import { validateFormData } from './validateFormData.js';
-import { t } from '../t.js';
+import { t } from '../i18n.js';
 
 function formatDeadline(deadline) {
   const d = new Date(deadline);
@@ -58,7 +57,7 @@ function createNativeButton(mentionBtn) {
   return btn;
 }
 
-export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId, getRepositoryRecord }) {
+export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId, onRepositoryUpdate }) {
   if (document.getElementById('questionnaire-create-btn')) return;
 
   const insertionPoint = findInsertionPoint();
@@ -116,15 +115,9 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
         });
 
         const row = buildQuestionnaireRow(formData, loginUser, commentID);
-        const repositoryRecord = getRepositoryRecord();
-
-        let repositoryRecordId;
-        if (repositoryRecord) {
-          await addQuestionnaireRow(repositoryRecord.$id.value, repositoryRecord.table.value, row, repoAppId);
-          repositoryRecordId = repositoryRecord.$id.value;
-        } else {
-          repositoryRecordId = await createRepositoryRecord(appId, recordId, row, repoAppId);
-        }
+        const repositoryRecord = await addQuestionnaireRow(appId, recordId, row, repoAppId);
+        const repositoryRecordId = repositoryRecord.$id.value;
+        onRepositoryUpdate(repositoryRecord);
 
         try {
           await scheduleQuestionnaireEnd({
@@ -142,7 +135,9 @@ export function createQuestionnaireButton({ pluginId, appId, recordId, repoAppId
       },
     });
 
+    // show() resolves once the dialog closes, however it was closed
     await dialog.show();
+    unmount(form);
   });
 
   if (mode === 'marktone') {

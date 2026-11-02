@@ -1,13 +1,15 @@
-// src/js/desktop.js
 import { getRepositoryRecord } from '../services/getRepositoryRecord.js';
 import { createQuestionnaireButton } from '../services/questionnaireButtonCreator.js';
 import { insertQuestionnaires } from '../services/questionnaireCommentInsertor.js';
-import { setupI18n } from '../i18n.js';
 
 const PLUGIN_ID = kintone.$PLUGIN_ID;
 
+// detail.show fires again when moving between records without a full page
+// load, so the previous record's observer is disconnected first.
+let observer;
+
 kintone.events.on('app.record.detail.show', async () => {
-  await setupI18n();
+  observer?.disconnect();
 
   const appId = String(kintone.app.getId());
   const recordId = String(kintone.app.record.getId());
@@ -16,11 +18,11 @@ kintone.events.on('app.record.detail.show', async () => {
   const allowNonAdminPoll = config.allowNonAdminPoll === 'true';
   const repoAppId = config.repoAppId;
 
-  const repositoryRecord = await getRepositoryRecord(appId, recordId, repoAppId);
-  console.log('repository record:', repositoryRecord);
+  // Kept current by the create/vote flows, which hand back the freshly
+  // saved record, so polls re-inserted after a comment re-render reflect it.
+  let repositoryRecord = await getRepositoryRecord(appId, recordId, repoAppId);
 
   const loginUser = kintone.getLoginUser();
-  const userLanguage = loginUser.language;
 
   let canCreatePoll = true;
   if (!allowNonAdminPoll) {
@@ -33,26 +35,36 @@ kintone.events.on('app.record.detail.show', async () => {
     await kintone.app.record.showSideBar('COMMENTS');
   }
 
-  if (repositoryRecord) {
-    const flagsByCommentID = buildFlagsByCommentID(repositoryRecord.table.value, loginUser);
-    insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser, repoAppId });
-  }
+  const onRepositoryUpdate = (record) => {
+    repositoryRecord = record;
+  };
 
-  const observer = new MutationObserver(() => {
+  const renderQuestionnaires = () => {
+    if (!repositoryRecord) return;
+
+    const flagsByCommentID = buildFlagsByCommentID(repositoryRecord.table.value, loginUser);
+    insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, {
+      repositoryRecordId: repositoryRecord.$id.value,
+      loginUser,
+      repoAppId,
+      onRepositoryUpdate,
+    });
+  };
+
+  renderQuestionnaires();
+
+  observer = new MutationObserver(() => {
     if (canCreatePoll) {
       createQuestionnaireButton({
         pluginId: PLUGIN_ID,
         appId,
         recordId,
         repoAppId,
-        getRepositoryRecord: () => repositoryRecord,
+        onRepositoryUpdate,
       });
     }
 
-    if (repositoryRecord) {
-      const flagsByCommentID = buildFlagsByCommentID(repositoryRecord.table.value, loginUser);
-      insertQuestionnaires(repositoryRecord.table.value, flagsByCommentID, { repositoryRecord, loginUser, repoAppId });
-    }
+    renderQuestionnaires();
   });
 
   observer.observe(document.body, { childList: true, subtree: true });

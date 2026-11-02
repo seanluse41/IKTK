@@ -1,197 +1,133 @@
 <script>
-  import Button from './builders/desktop/button.svelte';
-  import Text from './builders/desktop/text.svelte';
-  import Checkbox from './builders/desktop/checkbox.svelte';
-  import Notification from './builders/desktop/notification.svelte';
+  import { Button, Checkbox, Notification, Text } from 'kintone-ui-component';
   import { createRepositoryApp } from './services/createRepositoryApp.js';
-  import { t } from './t.js';
+  import { t } from './i18n.js';
 
   let { pluginId } = $props();
 
-  let config = $state({
-    repoAppId: '',
-    allowNonAdminPoll: false,
+  const savedConfig = kintone.plugin.app.getConfig(pluginId);
+
+  const repoAppIdField = new Text({
+    label: t('config.repositoryAppIdLabel'),
+    value: savedConfig.repoAppId || '',
+    placeholder: t('config.repositoryAppIdPlaceholder'),
+    requiredIcon: true,
   });
 
-  let repoToken = $state('');
+  const repoTokenField = new Text({
+    label: t('config.repositoryTokenLabel'),
+    value: savedConfig.repoToken || '',
+    placeholder: t('config.repositoryTokenPlaceholder'),
+  });
 
-  const savedConfig = kintone.plugin.app.getConfig(pluginId);
-  if (savedConfig.repoAppId) {
-    config.repoAppId = savedConfig.repoAppId;
-  }
-  config.allowNonAdminPoll = savedConfig.allowNonAdminPoll === 'true';
-  if (savedConfig.repoToken) {
-    repoToken = savedConfig.repoToken;
-  }
+  const allowNonAdminPollField = new Checkbox({
+    label: t('config.allowNonAdminPollLabel'),
+    items: [{ label: t('config.allowNonAdminPollItem'), value: 'allowNonAdminPoll' }],
+    value: savedConfig.allowNonAdminPoll === 'true' ? ['allowNonAdminPoll'] : [],
+  });
 
-  let successNotification;
-  let errorNotification;
+  const createRepositoryButton = new Button({ text: t('config.createRepositoryButton'), type: 'normal' });
+  const saveButton = new Button({ text: t('config.saveButton'), type: 'submit' });
+  const cancelButton = new Button({ text: t('config.cancelButton'), type: 'normal' });
 
-  let successText = $state('');
-  let errorText = $state('');
+  const notification = new Notification({ duration: 2000 });
 
-  let repoAppIdError = $state('');
-  let isCreatingApp = $state(false);
-
-  function showSuccess(message) {
-    successText = message;
-    successNotification.open();
-  }
-
-  function showError(message) {
-    errorText = message;
-    errorNotification.open();
+  function notify(type, text) {
+    notification.type = type;
+    notification.text = text;
+    notification.open();
   }
 
-  async function handleCreateRepository() {
-    const confirmed = confirm(t('config.createRepositoryConfirm'));
-    if (!confirmed) return;
+  repoAppIdField.addEventListener('change', () => {
+    repoAppIdField.error = '';
+  });
 
-    isCreatingApp = true;
+  createRepositoryButton.addEventListener('click', async () => {
+    if (!confirm(t('config.createRepositoryConfirm'))) return;
+
+    createRepositoryButton.disabled = true;
+    createRepositoryButton.text = t('config.creatingRepositoryButton');
 
     try {
       const newAppId = await createRepositoryApp();
-      config.repoAppId = String(newAppId);
-      repoAppIdError = '';
+      repoAppIdField.value = String(newAppId);
+      repoAppIdField.error = '';
+      // A token for the old repository app won't work against the new one
+      repoTokenField.value = '';
 
-      if (repoToken) {
-        repoToken = '';
-      }
-
-      showSuccess(t('config.createRepositorySuccess', { appId: newAppId }));
+      notify('success', t('config.createRepositorySuccess', { appId: newAppId }));
     } catch (error) {
       console.error('Failed to create repository app:', error);
-      showError(t('config.createRepositoryError'));
+      notify('danger', t('config.createRepositoryError'));
     } finally {
-      isCreatingApp = false;
+      createRepositoryButton.disabled = false;
+      createRepositoryButton.text = t('config.createRepositoryButton');
     }
-  }
+  });
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  saveButton.addEventListener('click', () => {
+    const repoAppId = repoAppIdField.value.trim();
 
-    if (!config.repoAppId.trim()) {
-      repoAppIdError = t('config.repositoryAppIdRequired');
-      showError(t('config.repositoryAppIdRequired'));
+    if (!repoAppId) {
+      repoAppIdField.error = t('config.repositoryAppIdRequired');
+      notify('danger', t('config.repositoryAppIdRequired'));
       return;
     }
-    repoAppIdError = '';
 
     kintone.plugin.app.setConfig({
-      repoToken,
-      repoAppId: config.repoAppId,
-      allowNonAdminPoll: String(config.allowNonAdminPoll),
+      repoToken: repoTokenField.value.trim(),
+      repoAppId,
+      allowNonAdminPoll: String(allowNonAdminPollField.value.length > 0),
     }, () => {
-      showSuccess(t('config.saveSuccess'));
+      notify('success', t('config.saveSuccess'));
       setTimeout(() => {
         window.location.href = '../../flow?app=' + kintone.app.getId();
       }, 2000);
     });
-  }
+  });
 
-  function handleCancel() {
+  cancelButton.addEventListener('click', () => {
     window.location.href = '../../' + kintone.app.getId() + '/plugin/';
-  }
+  });
 
-  function handleRepoAppIdChange(e) {
-    config.repoAppId = e.detail.value;
-    if (repoAppIdError) {
-      repoAppIdError = '';
-    }
-  }
+  const place = (...elements) => (node) => {
+    node.append(...elements);
+  };
 
-  function handleRepoTokenChange(e) {
-    repoToken = e.detail.value;
-  }
-
-  function handleAllowNonAdminPollChange(e) {
-    config.allowNonAdminPoll = e.detail.value.length > 0;
-  }
+  // Notification appends itself to document.body on open(), outside this
+  // component, so it has to be removed by hand. See the KUC section of the README.
+  const removeNotification = () => () => notification.remove();
 </script>
 
-<div class="config-container">
+<div class="config-container" {@attach removeNotification}>
   <h1>{t('config.heading')}</h1>
   <p class="subtitle">{t('config.subtitle')}</p>
 
-  <form onsubmit={handleSubmit}>
-    <div class="section">
-      <h2>{t('config.repositoryAppSection')}</h2>
+  <div class="section">
+    <h2>{t('config.repositoryAppSection')}</h2>
 
-      <Text
-        label={t('config.repositoryAppIdLabel')}
-        value={config.repoAppId}
-        placeholder={t('config.repositoryAppIdPlaceholder')}
-        requiredIcon={true}
-        error={repoAppIdError}
-        onchange={handleRepoAppIdChange}
-      />
+    <div {@attach place(repoAppIdField)}></div>
 
-      <div class="button-group">
-        <Button
-          text={isCreatingApp ? t('config.creatingRepositoryButton') : t('config.createRepositoryButton')}
-          type="normal"
-          disabled={isCreatingApp}
-          onclick={handleCreateRepository}
-        />
-      </div>
+    <div class="button-group" {@attach place(createRepositoryButton)}></div>
 
-      <p class="info-text">
-        {t('config.createRepositoryInfo')}
-      </p>
+    <p class="info-text">
+      {t('config.createRepositoryInfo')}
+    </p>
 
-      <Text
-        label={t('config.repositoryTokenLabel')}
-        value={repoToken}
-        placeholder={t('config.repositoryTokenPlaceholder')}
-        onchange={handleRepoTokenChange}
-      />
-      <p class="info-text">
-        {t('config.repositoryTokenInfo')}
-      </p>
-    </div>
+    <div {@attach place(repoTokenField)}></div>
+    <p class="info-text">
+      {t('config.repositoryTokenInfo')}
+    </p>
+  </div>
 
-    <div class="section">
-      <h2>{t('config.optionsSection')}</h2>
+  <div class="section">
+    <h2>{t('config.optionsSection')}</h2>
 
-      <div class="checkbox-container">
-        <Checkbox
-          label={t('config.allowNonAdminPollLabel')}
-          items={[{ label: t('config.allowNonAdminPollItem'), value: 'allowNonAdminPoll' }]}
-          value={config.allowNonAdminPoll ? ['allowNonAdminPoll'] : []}
-          onchange={handleAllowNonAdminPollChange}
-        />
-      </div>
-    </div>
+    <div class="checkbox-container" {@attach place(allowNonAdminPollField)}></div>
+  </div>
 
-    <div class="form-actions">
-      <Button
-        text={t('config.saveButton')}
-        type="submit"
-        onclick={handleSubmit}
-      />
-
-      <Button
-        text={t('config.cancelButton')}
-        type="normal"
-        onclick={handleCancel}
-      />
-    </div>
-  </form>
+  <div class="form-actions" {@attach place(saveButton, cancelButton)}></div>
 </div>
-
-<Notification
-  bind:this={successNotification}
-  text={successText}
-  type="success"
-  duration={2000}
-/>
-
-<Notification
-  bind:this={errorNotification}
-  text={errorText}
-  type="danger"
-  duration={2000}
-/>
 
 <style>
   .config-container {

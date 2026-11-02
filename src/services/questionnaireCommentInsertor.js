@@ -1,5 +1,5 @@
 // src/services/questionnaireCommentInsertor.js
-import { mount } from 'svelte';
+import { mount, unmount } from 'svelte';
 import Questionnaire from '../components/questionnaire.svelte';
 
 // Inserts a questionnaire <li> right after the comment that announced it.
@@ -16,6 +16,12 @@ import Questionnaire from '../components/questionnaire.svelte';
 // inserted wrapper in the wrong position or detached entirely. So on every
 // call we re-check that the wrapper still immediately follows its anchor
 // comment, and move/recreate it if not.
+//
+// Removing the wrapper from the DOM doesn't stop the Svelte component
+// mounted inside it, so every mount is tracked here and unmounted before
+// it's replaced.
+const mounted = new Map();
+
 export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
   const lists = document.querySelectorAll('.itemlist-gaia');
   if (lists.length === 0) return;
@@ -34,14 +40,17 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
     if (!anchorLi) return; // comment not rendered (e.g. deleted, or older page not loaded)
 
     const wrapperId = `questionnaire-${commentID}`;
-    const existingWrapper = document.getElementById(wrapperId);
+    const existing = mounted.get(wrapperId);
 
-    if (existingWrapper && existingWrapper.previousElementSibling === anchorLi) {
+    if (existing?.wrapper.isConnected && existing.wrapper.previousElementSibling === anchorLi) {
       return; // already correctly positioned
     }
 
-    if (existingWrapper) {
-      existingWrapper.remove(); // stale position (or detached) — recreate below
+    if (existing) {
+      // stale position (or detached by a re-render) — recreate below
+      unmount(existing.component);
+      existing.wrapper.remove();
+      mounted.delete(wrapperId);
     }
 
     const wrapper = document.createElement('li');
@@ -51,17 +60,20 @@ export function insertQuestionnaires(rows, flagsByCommentID = {}, voteContext) {
 
     const flags = flagsByCommentID[commentID] ?? { isCreator: false, hasVoted: false, isEnded: false };
 
-    mount(Questionnaire, {
+    const component = mount(Questionnaire, {
       target: wrapper,
       props: {
         row: row.value,
         isCreator: flags.isCreator,
         hasVoted: flags.hasVoted,
         isEnded: flags.isEnded,
-        repositoryRecord: voteContext.repositoryRecord,
+        repositoryRecordId: voteContext.repositoryRecordId,
         loginUser: voteContext.loginUser,
         repoAppId: voteContext.repoAppId,
+        onRepositoryUpdate: voteContext.onRepositoryUpdate,
       },
     });
+
+    mounted.set(wrapperId, { wrapper, component });
   });
 }
