@@ -1,9 +1,10 @@
 ---
 created: 2026-11-02T06:19:57.969Z
-updated: 2026-11-02T06:19:57.967Z
+updated: 2026-11-02T07:43:20.577Z
 assigned: ""
 progress: 0
 tags: []
+completed: 2026-11-02T07:43:20.577Z
 ---
 
 # add config option to enable a "reminder" setting on poll creation.

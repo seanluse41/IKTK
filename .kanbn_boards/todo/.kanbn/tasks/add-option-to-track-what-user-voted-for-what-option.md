@@ -1,9 +1,10 @@
 ---
 created: 2026-11-02T06:13:52.030Z
-updated: 2026-11-02T06:13:52.027Z
+updated: 2026-11-02T07:43:16.942Z
 assigned: ""
 progress: 0
 tags: []
+completed: 2026-11-02T07:43:16.942Z
 ---
 
 # add option to track what user voted for what option
