@@ -36,7 +36,7 @@
     "serverReady": "此網域的伺服器已就緒：",
     "serverNotProvisioned": "此網域尚未準備伺服器。請點選上方的「準備伺服器」並貼上步驟 2 的 Token。",
     "serverProvisioned": "已為此網域準備好伺服器。",
-    "provisionError": "無法準備伺服器：{{message}}",
+    "provisionError": "無法準備伺服器：{{message}} 若此網域有 IP 位址限制，請確認已允許 {{ips}}。",
     "step4Title": "為此應用程式產生 API Token",
     "step4Help": "伺服器需要此應用程式的「檢視記錄」，用來確認每個問卷的公告留言，並在問卷結束時張貼結果。Token 會保存在只有此應用程式管理者能看到的外掛程式隱藏設定，以及伺服器中。",
     "appTokenInstructions": "開啟此應用程式的 API Token 設定，產生具有「檢視記錄」的 Token。點選儲存，再更新應用程式。將 Token 貼在下方，然後點選此頁面底部的「儲存」。",
@@ -69,7 +69,8 @@
     "allowAddOptionsHelp": "由建立者為每個問卷選擇。參與者可在截止前新增選項，最多共 10 個。新增選項時不會通知任何人。",
     "allowRemindersLabel": "提醒",
     "allowRemindersItem": "允許建立者設定提醒",
-    "allowRemindersHelp": "建立者可選擇截止前 1 天、6 小時或 1 小時。提醒會提及所有參與者（包括群組與組織），無論是否已投票。"
+    "allowRemindersHelp": "建立者可選擇截止前 1 天、6 小時或 1 小時。提醒會提及所有參與者（包括群組與組織），無論是否已投票。",
+    "ipRestrictionNote": "若此網域有 IP 位址限制（cybozu.com 存取限制），請先由 cybozu.com 管理者允許 {{ips}}。伺服器會從此位址存取 Kintone。"
   },
   "form": {
     "titleLabel": "標題",

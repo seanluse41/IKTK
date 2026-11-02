@@ -21,11 +21,11 @@ export const ui = $state({
   busy: false,
 });
 
-export const fail = (error, key) => {
+export const fail = (error, key, values = {}) => {
   console.error(error);
   ui.dialog = {
     title: t('config.errorLabel'),
-    content: t(key, { message: error.message || String(error) }),
+    content: t(key, { message: error.message || String(error), ...values }),
     icon: 'error',
   };
 };

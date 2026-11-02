@@ -14,6 +14,7 @@
     ui,
     watchProvision,
   } from '../../config/state.svelte.js';
+  import { EGRESS_IPS } from '../../config/constants.js';
   import { startProvision } from '../../config/controlPlane.js';
   import { repositoryTokenUrl, thisAppTokenUrl } from '../../config/kintoneUrls.js';
   import { repositoryTokenPrompt } from '../../config/tokenPrompt.js';
@@ -124,7 +125,9 @@
         watchProvision();
       }
     } catch (error) {
-      fail(error, 'config.provisionError');
+      // An IP-restricted domain refuses the server's token check, which
+      // looks the same as a wrong token, so the error names both.
+      fail(error, 'config.provisionError', { ips: EGRESS_IPS.join(', ') });
     } finally {
       ui.busy = false;
     }
@@ -182,6 +185,8 @@
         <p class="failed">{provisioning.error}</p>
       {/if}
     {/if}
+
+    <HelpText>{t('config.ipRestrictionNote', { ips: EGRESS_IPS.join(', ') })}</HelpText>
 
     {#if settings.endpoint}
       <HelpText>{t('config.serverReady')}</HelpText>

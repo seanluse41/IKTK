@@ -32,7 +32,7 @@ KUC コンポーネントはラッパーなしで直接使用します(`new Text
 
 ### サーバー
 
-アンケートの保存・投票の集計・結果の投稿は、ドメインごとのサーバー([IKTK-reminder](../IKTK-reminder))が行います。プラグイン設定の「初期設定」で、リポジトリアプリの作成、APIトークンの発行、サーバーの用意、このアプリのAPIトークンの登録を順に行います。リポジトリアプリは管理者と作成者しか開けず、ユーザーのブラウザーからは `kintone.plugin.app.proxy` 経由でのみサーバーにアクセスします。インストールから結果投稿までのすべてのリクエストは、英語版の「Requests, step by step」の表にまとめています(IKTK-reminder の README と同じ内容)。
+アンケートの保存・投票の集計・結果の投稿は、ドメインごとのサーバー([IKTK-reminder](../IKTK-reminder))が行います。プラグイン設定の「初期設定」で、リポジトリアプリの作成、APIトークンの発行、サーバーの用意、このアプリのAPIトークンの登録を順に行います。リポジトリアプリは管理者と作成者しか開けず、ユーザーのブラウザーからは `kintone.plugin.app.proxy` 経由でのみサーバーにアクセスします。IPアドレス制限をしているドメインでは、サーバーの固定IP(`src/config/constants.js` の `EGRESS_IPS`)を先に許可する必要があります(設定画面の手順3に表示)。インストールから結果投稿までのすべてのリクエストは、英語版の「Requests, step by step」の表にまとめています(IKTK-reminder の README と同じ内容)。
 
 ---
 
@@ -68,7 +68,7 @@ KUC components are used directly, without wrappers: construct one with `new Text
 
 ### Server
 
-Polls are stored, counted, and posted by a per-domain server ([IKTK-reminder](../IKTK-reminder)). Initial setup in the plugin settings walks through creating the repository app, its API token, provisioning the server, and this app's API token. The repository app is locked to administrators and its creator; users' browsers only reach the server through `kintone.plugin.app.proxy`, which adds the app's token from proxy config. `CONTROL_PLANE_HOST` in `src/config/constants.js` is the one hardcoded address. Every request the plugin and server make is listed below, and kept in sync with [IKTK-reminder's README](../IKTK-reminder/README.md#requests-step-by-step).
+Polls are stored, counted, and posted by a per-domain server ([IKTK-reminder](../IKTK-reminder)). Initial setup in the plugin settings walks through creating the repository app, its API token, provisioning the server, and this app's API token. The repository app is locked to administrators and its creator; users' browsers only reach the server through `kintone.plugin.app.proxy`, which adds the app's token from proxy config. `CONTROL_PLANE_HOST` in `src/config/constants.js` is the one hardcoded address. Domains with cybozu.com IP address restrictions must allow the server's fixed IP (`EGRESS_IPS` in the same file) before provisioning; the config screen says so in step 3. Every request the plugin and server make is listed below, and kept in sync with [IKTK-reminder's README](../IKTK-reminder/README.md#requests-step-by-step).
 
 ### Requests, step by step
 

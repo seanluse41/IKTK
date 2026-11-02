@@ -36,7 +36,7 @@
     "serverReady": "This domain's server is ready:",
     "serverNotProvisioned": "This domain isn't provisioned yet. Click Provision server above and paste the token from step 2.",
     "serverProvisioned": "Server provisioned for this domain.",
-    "provisionError": "Couldn't provision the server: {{message}}",
+    "provisionError": "Couldn't provision the server: {{message}} If this domain restricts IP addresses, check that {{ips}} is allowed.",
     "step4Title": "Give this app an API token",
     "step4Help": "The server needs View records on this app to check each poll's announcement comment and to post the results when a poll ends. The token is kept in this plugin's hidden settings, which only this app's administrators can see, and on the server.",
     "appTokenInstructions": "Open this app's API token settings and generate a token with View records. Click Save, then Update App. Paste the token below and click Save at the bottom of this page.",
@@ -69,7 +69,8 @@
     "allowAddOptionsHelp": "The creator chooses for each poll. Participants can add options until the poll closes, up to 10 in all. No one is notified when an option is added.",
     "allowRemindersLabel": "Reminders",
     "allowRemindersItem": "Let poll creators schedule a reminder",
-    "allowRemindersHelp": "The creator picks 1 day, 6 hours, or 1 hour before the deadline. The reminder mentions everyone in the poll, groups and departments included, whether or not they've voted."
+    "allowRemindersHelp": "The creator picks 1 day, 6 hours, or 1 hour before the deadline. The reminder mentions everyone in the poll, groups and departments included, whether or not they've voted.",
+    "ipRestrictionNote": "If this domain restricts IP addresses (cybozu.com Access restrictions), a cybozu.com administrator must allow {{ips}} first. The server reaches Kintone from that address."
   },
   "form": {
     "titleLabel": "Title",

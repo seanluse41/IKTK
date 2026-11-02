@@ -36,7 +36,7 @@
     "serverReady": "El servidor de este dominio está listo:",
     "serverNotProvisioned": "Este dominio aún no tiene servidor. Haz clic en Preparar servidor y pega el token del paso 2.",
     "serverProvisioned": "Servidor preparado para este dominio.",
-    "provisionError": "No se pudo preparar el servidor: {{message}}",
+    "provisionError": "No se pudo preparar el servidor: {{message}} Si este dominio restringe direcciones IP, comprueba que {{ips}} esté permitida.",
     "step4Title": "Genera un token de API para esta aplicación",
     "step4Help": "El servidor necesita Ver registros en esta aplicación para comprobar el comentario que anuncia cada encuesta y para publicar los resultados cuando termina. El token se guarda en la configuración oculta del plug-in, que solo ven los administradores de esta aplicación, y en el servidor.",
     "appTokenInstructions": "Abre la configuración de tokens de API de esta aplicación y genera un token con Ver registros. Haz clic en Guardar y luego en Actualizar aplicación. Pega el token abajo y haz clic en Guardar al final de esta página.",
@@ -69,7 +69,8 @@
     "allowAddOptionsHelp": "El creador lo elige en cada encuesta. Los participantes pueden añadir opciones hasta que cierre, hasta 10 en total. No se avisa a nadie cuando se añade una opción.",
     "allowRemindersLabel": "Recordatorios",
     "allowRemindersItem": "Permitir a los creadores programar un recordatorio",
-    "allowRemindersHelp": "El creador elige 1 día, 6 horas o 1 hora antes de la fecha límite. El recordatorio menciona a todos los participantes, grupos y departamentos incluidos, hayan votado o no."
+    "allowRemindersHelp": "El creador elige 1 día, 6 horas o 1 hora antes de la fecha límite. El recordatorio menciona a todos los participantes, grupos y departamentos incluidos, hayan votado o no.",
+    "ipRestrictionNote": "Si este dominio restringe direcciones IP (restricciones de acceso de cybozu.com), un administrador de cybozu.com debe permitir antes {{ips}}. El servidor accede a Kintone desde esa dirección."
   },
   "form": {
     "titleLabel": "Título",

@@ -9,6 +9,11 @@ export const CONTROL_PLANE_HOST = 'https://ijk1g7lb04.execute-api.ap-northeast-1
 // match the control plane's LookupKey parameter (samconfig.toml).
 export const LOOKUP_KEY = 'f9218b865b18fd294ef0710a45d026be727bb25ca809515872665be77fa7d4ef';
 
+// Where the server's calls to Kintone come from: the NAT in front of the
+// control plane's and every domain stack's Lambdas (iktk-server's SubnetIds).
+// Domains with cybozu.com IP address restrictions must allow these.
+export const EGRESS_IPS = ['54.150.221.192'];
+
 // The header the domain stack reads this app's API token from. Kintone adds it
 // to proxied requests from proxy config; see setAppToken in pluginConfig.js.
 export const APP_TOKEN_HEADER = 'X-IKTK-App-Token';
